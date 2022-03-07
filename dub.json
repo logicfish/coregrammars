@@ -1,0 +1,12 @@
+{
+	"authors": [
+		"logic"
+	],
+	"copyright": "Copyright © 2022, logic",
+	"dependencies": {
+		"pegged": "~>0.4.5"
+	},
+	"description": "Grammars containing core language features, for creating DSLs and embedded languages",
+	"license": "proprietary",
+	"name": "coregrammars"
+}
