@@ -1,8 +1,8 @@
 {
 	"authors": [
-		"logic"
+		"Mark Fisher"
 	],
-	"copyright": "Copyright © 2022, logic",
+	"copyright": "Copyright © 2022, Mark Fisher",
 	"configurations": [
 		{
 			"name": "default",
@@ -19,6 +19,6 @@
 		"pegged": "~master"
 	},
 	"description": "Grammars containing core language features, for creating DSLs and embedded languages",
-	"license": "proprietary",
+	"license": "Apache License 2.0",
 	"name": "coregrammars"
 }
