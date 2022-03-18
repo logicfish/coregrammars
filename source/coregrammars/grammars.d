@@ -8,41 +8,65 @@ enum CoreGrammarsPackage = "coregrammars.gen";
 version(COREGRAMMARS_MODGEN) {
   version(unittest) {
     // mixin each grammar inline (markdown grammar inlined crashes the compiler)
-    enum CoreGrammars = [ "expr", "ini", "json" ];
+    enum CoreGrammars = [ "terms","expr", "ini", "json" ];
     static foreach(g;CoreGrammars) {
       mixin(grammar(import(g~".peg")));
     }
   } else {
-    enum CoreGrammars = [ "expr", "ini", "json", "md" ];
+    enum CoreGrammars = [
+      "terms": "",
+      "expr": "import coregrammars.gen.terms;\n",
+      "ini": "import coregrammars.gen.terms;\n",
+      "json": "import coregrammars.gen.terms;\n",
+      "md": ""
+    ];
     // Main routine that regenerates each grammar module
     void main(string[] args) {
       import std.file : mkdirRecurse,rmdirRecurse;
       CoreGrammarsFolder.rmdirRecurse;
       CoreGrammarsFolder.mkdirRecurse;
-      static foreach(g;CoreGrammars) {
+      static foreach(g,h;CoreGrammars) {
         import std.experimental.logger;
         sharedLog.log("Module generator: ",g);
         asModule(CoreGrammarsPackage ~ "." ~ g,
             CoreGrammarsFolder ~ g,
-            import(g ~ ".peg")
+            import(g ~ ".peg"),
+            h
         );
       }
     }
   }
 } else {
+  public import coregrammars.gen.terms;
   public import coregrammars.gen.expr;
   public import coregrammars.gen.ini;
   public import coregrammars.gen.json;
   public import coregrammars.gen.md;
-  enum CoreGrammars = [ "expr", "ini", "json", "md" ];
+  enum CoreGrammars = [ "terms", "expr", "ini", "json", "md" ];
 }
 
 unittest {
-  import coregrammars.gen.expr;
+  //import coregrammars.gen.expr;
 }
 
 unittest {
-  import coregrammars.gen.ini;
+  //import coregrammars.gen.ini;
+  enum input = `
+ [Section1]
+ testString = "stringVal"
+ testInt = 3
+ testBool = true
+ [Section2]
+ testString = "string2Val"
+ testInt = 13
+ testBool = false
+ `;
+ enum parsed = INIGrammar(input);
+ assert(parsed.successful);
+}
+
+unittest {
+  //import coregrammars.gen.ini;
   enum input = `
  # Test comment
  [Section1]
@@ -54,6 +78,7 @@ unittest {
  testString = "string2Val"
  # Test comment
  testInt = 13
+ [Section3]
  testBool = false
  `;
  enum parsed = INIGrammar(input);
@@ -62,7 +87,7 @@ unittest {
 }
 
 unittest {
-  import coregrammars.gen.json;
+  //import coregrammars.gen.json;
   alias JSON=JSONGrammar;
     enum example2 = `
     {
@@ -83,8 +108,12 @@ unittest {
     auto example2Tree = JSON(example2);
     assert(example2Tree.successful);
     assert(example2Tree[0].children.length == 12);
+
     assert(example2Tree[0][0][0].matches == ["Number"]);
     assert(example2Tree[0][0][1].matches == ["42"]);
+
+    assert(example2Tree[0][2][0].matches == ["String"]);
+    assert(example2Tree[0][2][1].matches == ["abc"]);
 
     enum example3 =
         `{

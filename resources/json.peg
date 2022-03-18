@@ -1,24 +1,25 @@
 JSONGrammar:
     JSONObject <  :'{' (Pair (:',' Pair)*)? :'}'
-    Pair       <  String :':' Value
+    Pair       <  Name :':' Value
+    Name       <  Terminals.String
     Array      <  :'[' (Value (:',' Value)* )? :']'
-    Value  <  String
-            / Number
+    Value  <  Terminals.String
+            / Terminals.Number
             / JSONObject
             / Array
-            / True
-            / False
-            / Null
-    True   <- "true"
-    False  <- "false"
-    Null   <- "null"
-    String <~ :doublequote Char* :doublequote
-    Char   <~ backslash doublequote
-            / backslash backslash
-            / backslash [bfnrt]
-            / backslash 'u' Hex Hex Hex Hex
-            / (!doublequote .)
-    Number <~ '0'
-            / [1-9] Digit* ('.' Digit*)?
-    Digit  <- [0-9]
-    Hex    <- [0-9A-Fa-f]
+            / Terminals.Boolean
+            / Terminals.Null
+
+#    True   <- "true"
+#    False  <- "false"
+#    Null   <- "null"
+#    String <~ :doublequote Char* :doublequote
+#    Char   <~ backslash doublequote
+#            / backslash backslash
+#            / backslash [bfnrt]
+#            / backslash 'u' Hex Hex Hex Hex
+#            / (!doublequote .)
+#    Number <~ '0'
+#            / [1-9] Digit* ('.' Digit*)?
+#    Digit  <- [0-9]
+#    Hex    <- [0-9A-Fa-f]

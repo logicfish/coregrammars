@@ -13,30 +13,19 @@ INIGrammar:
 #  Decl < identifier :"=" (String / Number) :eol
   Decl < identifier :"=" Value
 
-  Value < String / Number / Boolean
-#  Value < String / Number
-#  Value < String
-#  Value < String / Number / True / False
+  Value < Terminals.String / Terminals.Number / Terminals.Boolean / Terminals.Null
 
-  Boolean < True / False
-
-  True   <- "true"
-
-  False  <- "false"
-
-  #Null   <- :"null"
-
-  String <~ :doublequote Char* :doublequote
-
-  Char   <~ backslash doublequote
-          / backslash backslash
-          / backslash [bfnrt]
-          / backslash 'u' Hex Hex Hex Hex
-          / (!doublequote .)
-
-  Number <~ '0'
-          / [1-9] Digit* ('.' Digit*)?
-
-  Digit  <- [0-9]
-
-  Hex    <- [0-9A-Fa-f]
+#  String <~ :doublequote Char* :doublequote
+#
+#  Char   <~ backslash doublequote
+#          / backslash backslash
+#          / backslash [bfnrt]
+#          / backslash 'u' Hex Hex Hex Hex
+#          / (!doublequote .)
+#
+#  Number <~ '0'
+#          / [1-9] Digit* ('.' Digit*)?
+#
+#  Digit  <- [0-9]
+#
+#  Hex    <- [0-9A-Fa-f]

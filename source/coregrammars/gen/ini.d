@@ -16,37 +16,29 @@ INIGrammar:
 #  Decl < identifier :"=" (String / Number) :eol
   Decl < identifier :"=" Value
 
-  Value < String / Number / Boolean
-#  Value < String / Number
-#  Value < String
-#  Value < String / Number / True / False
+  Value < Terminals.String / Terminals.Number / Terminals.Boolean / Terminals.Null
 
-  Boolean < True / False
-
-  True   <- "true"
-
-  False  <- "false"
-
-  #Null   <- :"null"
-
-  String <~ :doublequote Char* :doublequote
-
-  Char   <~ backslash doublequote
-          / backslash backslash
-          / backslash [bfnrt]
-          / backslash 'u' Hex Hex Hex Hex
-          / (!doublequote .)
-
-  Number <~ '0'
-          / [1-9] Digit* ('.' Digit*)?
-
-  Digit  <- [0-9]
-
-  Hex    <- [0-9A-Fa-f]
+#  String <~ :doublequote Char* :doublequote
+#
+#  Char   <~ backslash doublequote
+#          / backslash backslash
+#          / backslash [bfnrt]
+#          / backslash 'u' Hex Hex Hex Hex
+#          / (!doublequote .)
+#
+#  Number <~ '0'
+#          / [1-9] Digit* ('.' Digit*)?
+#
+#  Digit  <- [0-9]
+#
+#  Hex    <- [0-9A-Fa-f]
 
 
 +/
 module coregrammars.gen.ini;
+
+import coregrammars.gen.terms;
+
 
 public import pegged.peg;
 import std.algorithm: startsWith;
@@ -73,14 +65,6 @@ struct GenericINIGrammar(TParseTree)
         rules["Header"] = toDelegate(&Header);
         rules["Decl"] = toDelegate(&Decl);
         rules["Value"] = toDelegate(&Value);
-        rules["Boolean"] = toDelegate(&Boolean);
-        rules["True"] = toDelegate(&True);
-        rules["False"] = toDelegate(&False);
-        rules["String"] = toDelegate(&String);
-        rules["Char"] = toDelegate(&Char);
-        rules["Number"] = toDelegate(&Number);
-        rules["Digit"] = toDelegate(&Digit);
-        rules["Hex"] = toDelegate(&Hex);
         rules["Spacing"] = toDelegate(&Spacing);
     }
 
@@ -326,7 +310,7 @@ struct GenericINIGrammar(TParseTree)
     {
         if(__ctfe)
         {
-            return         pegged.peg.defined!(pegged.peg.or!(pegged.peg.wrapAround!(Spacing, String, Spacing), pegged.peg.wrapAround!(Spacing, Number, Spacing), pegged.peg.wrapAround!(Spacing, Boolean, Spacing)), "INIGrammar.Value")(p);
+            return         pegged.peg.defined!(pegged.peg.or!(pegged.peg.wrapAround!(Spacing, Terminals.String, Spacing), pegged.peg.wrapAround!(Spacing, Terminals.Number, Spacing), pegged.peg.wrapAround!(Spacing, Terminals.Boolean, Spacing), pegged.peg.wrapAround!(Spacing, Terminals.Null, Spacing)), "INIGrammar.Value")(p);
         }
         else
         {
@@ -334,7 +318,7 @@ struct GenericINIGrammar(TParseTree)
                 return *m;
             else
             {
-                TParseTree result = hooked!(pegged.peg.defined!(pegged.peg.or!(pegged.peg.wrapAround!(Spacing, String, Spacing), pegged.peg.wrapAround!(Spacing, Number, Spacing), pegged.peg.wrapAround!(Spacing, Boolean, Spacing)), "INIGrammar.Value"), "Value")(p);
+                TParseTree result = hooked!(pegged.peg.defined!(pegged.peg.or!(pegged.peg.wrapAround!(Spacing, Terminals.String, Spacing), pegged.peg.wrapAround!(Spacing, Terminals.Number, Spacing), pegged.peg.wrapAround!(Spacing, Terminals.Boolean, Spacing), pegged.peg.wrapAround!(Spacing, Terminals.Null, Spacing)), "INIGrammar.Value"), "Value")(p);
                 memo[tuple(`Value`, p.end)] = result;
                 return result;
             }
@@ -345,305 +329,17 @@ struct GenericINIGrammar(TParseTree)
     {
         if(__ctfe)
         {
-            return         pegged.peg.defined!(pegged.peg.or!(pegged.peg.wrapAround!(Spacing, String, Spacing), pegged.peg.wrapAround!(Spacing, Number, Spacing), pegged.peg.wrapAround!(Spacing, Boolean, Spacing)), "INIGrammar.Value")(TParseTree("", false,[], s));
+            return         pegged.peg.defined!(pegged.peg.or!(pegged.peg.wrapAround!(Spacing, Terminals.String, Spacing), pegged.peg.wrapAround!(Spacing, Terminals.Number, Spacing), pegged.peg.wrapAround!(Spacing, Terminals.Boolean, Spacing), pegged.peg.wrapAround!(Spacing, Terminals.Null, Spacing)), "INIGrammar.Value")(TParseTree("", false,[], s));
         }
         else
         {
             forgetMemo();
-            return hooked!(pegged.peg.defined!(pegged.peg.or!(pegged.peg.wrapAround!(Spacing, String, Spacing), pegged.peg.wrapAround!(Spacing, Number, Spacing), pegged.peg.wrapAround!(Spacing, Boolean, Spacing)), "INIGrammar.Value"), "Value")(TParseTree("", false,[], s));
+            return hooked!(pegged.peg.defined!(pegged.peg.or!(pegged.peg.wrapAround!(Spacing, Terminals.String, Spacing), pegged.peg.wrapAround!(Spacing, Terminals.Number, Spacing), pegged.peg.wrapAround!(Spacing, Terminals.Boolean, Spacing), pegged.peg.wrapAround!(Spacing, Terminals.Null, Spacing)), "INIGrammar.Value"), "Value")(TParseTree("", false,[], s));
         }
     }
     static string Value(GetName g)
     {
         return "INIGrammar.Value";
-    }
-
-    static TParseTree Boolean(TParseTree p)
-    {
-        if(__ctfe)
-        {
-            return         pegged.peg.defined!(pegged.peg.or!(pegged.peg.wrapAround!(Spacing, True, Spacing), pegged.peg.wrapAround!(Spacing, False, Spacing)), "INIGrammar.Boolean")(p);
-        }
-        else
-        {
-            if (auto m = tuple(`Boolean`, p.end) in memo)
-                return *m;
-            else
-            {
-                TParseTree result = hooked!(pegged.peg.defined!(pegged.peg.or!(pegged.peg.wrapAround!(Spacing, True, Spacing), pegged.peg.wrapAround!(Spacing, False, Spacing)), "INIGrammar.Boolean"), "Boolean")(p);
-                memo[tuple(`Boolean`, p.end)] = result;
-                return result;
-            }
-        }
-    }
-
-    static TParseTree Boolean(string s)
-    {
-        if(__ctfe)
-        {
-            return         pegged.peg.defined!(pegged.peg.or!(pegged.peg.wrapAround!(Spacing, True, Spacing), pegged.peg.wrapAround!(Spacing, False, Spacing)), "INIGrammar.Boolean")(TParseTree("", false,[], s));
-        }
-        else
-        {
-            forgetMemo();
-            return hooked!(pegged.peg.defined!(pegged.peg.or!(pegged.peg.wrapAround!(Spacing, True, Spacing), pegged.peg.wrapAround!(Spacing, False, Spacing)), "INIGrammar.Boolean"), "Boolean")(TParseTree("", false,[], s));
-        }
-    }
-    static string Boolean(GetName g)
-    {
-        return "INIGrammar.Boolean";
-    }
-
-    static TParseTree True(TParseTree p)
-    {
-        if(__ctfe)
-        {
-            return         pegged.peg.defined!(pegged.peg.literal!("true"), "INIGrammar.True")(p);
-        }
-        else
-        {
-            if (auto m = tuple(`True`, p.end) in memo)
-                return *m;
-            else
-            {
-                TParseTree result = hooked!(pegged.peg.defined!(pegged.peg.literal!("true"), "INIGrammar.True"), "True")(p);
-                memo[tuple(`True`, p.end)] = result;
-                return result;
-            }
-        }
-    }
-
-    static TParseTree True(string s)
-    {
-        if(__ctfe)
-        {
-            return         pegged.peg.defined!(pegged.peg.literal!("true"), "INIGrammar.True")(TParseTree("", false,[], s));
-        }
-        else
-        {
-            forgetMemo();
-            return hooked!(pegged.peg.defined!(pegged.peg.literal!("true"), "INIGrammar.True"), "True")(TParseTree("", false,[], s));
-        }
-    }
-    static string True(GetName g)
-    {
-        return "INIGrammar.True";
-    }
-
-    static TParseTree False(TParseTree p)
-    {
-        if(__ctfe)
-        {
-            return         pegged.peg.defined!(pegged.peg.literal!("false"), "INIGrammar.False")(p);
-        }
-        else
-        {
-            if (auto m = tuple(`False`, p.end) in memo)
-                return *m;
-            else
-            {
-                TParseTree result = hooked!(pegged.peg.defined!(pegged.peg.literal!("false"), "INIGrammar.False"), "False")(p);
-                memo[tuple(`False`, p.end)] = result;
-                return result;
-            }
-        }
-    }
-
-    static TParseTree False(string s)
-    {
-        if(__ctfe)
-        {
-            return         pegged.peg.defined!(pegged.peg.literal!("false"), "INIGrammar.False")(TParseTree("", false,[], s));
-        }
-        else
-        {
-            forgetMemo();
-            return hooked!(pegged.peg.defined!(pegged.peg.literal!("false"), "INIGrammar.False"), "False")(TParseTree("", false,[], s));
-        }
-    }
-    static string False(GetName g)
-    {
-        return "INIGrammar.False";
-    }
-
-    static TParseTree String(TParseTree p)
-    {
-        if(__ctfe)
-        {
-            return         pegged.peg.defined!(pegged.peg.fuse!(pegged.peg.and!(pegged.peg.discard!(doublequote), pegged.peg.zeroOrMore!(Char), pegged.peg.discard!(doublequote))), "INIGrammar.String")(p);
-        }
-        else
-        {
-            if (auto m = tuple(`String`, p.end) in memo)
-                return *m;
-            else
-            {
-                TParseTree result = hooked!(pegged.peg.defined!(pegged.peg.fuse!(pegged.peg.and!(pegged.peg.discard!(doublequote), pegged.peg.zeroOrMore!(Char), pegged.peg.discard!(doublequote))), "INIGrammar.String"), "String")(p);
-                memo[tuple(`String`, p.end)] = result;
-                return result;
-            }
-        }
-    }
-
-    static TParseTree String(string s)
-    {
-        if(__ctfe)
-        {
-            return         pegged.peg.defined!(pegged.peg.fuse!(pegged.peg.and!(pegged.peg.discard!(doublequote), pegged.peg.zeroOrMore!(Char), pegged.peg.discard!(doublequote))), "INIGrammar.String")(TParseTree("", false,[], s));
-        }
-        else
-        {
-            forgetMemo();
-            return hooked!(pegged.peg.defined!(pegged.peg.fuse!(pegged.peg.and!(pegged.peg.discard!(doublequote), pegged.peg.zeroOrMore!(Char), pegged.peg.discard!(doublequote))), "INIGrammar.String"), "String")(TParseTree("", false,[], s));
-        }
-    }
-    static string String(GetName g)
-    {
-        return "INIGrammar.String";
-    }
-
-    static TParseTree Char(TParseTree p)
-    {
-        if(__ctfe)
-        {
-            return         pegged.peg.defined!(pegged.peg.fuse!(pegged.peg.or!(pegged.peg.and!(backslash, doublequote), pegged.peg.and!(backslash, backslash), pegged.peg.and!(backslash, pegged.peg.or!(pegged.peg.literal!("b"), pegged.peg.literal!("f"), pegged.peg.literal!("n"), pegged.peg.literal!("r"), pegged.peg.literal!("t"))), pegged.peg.and!(backslash, pegged.peg.literal!("u"), Hex, Hex, Hex, Hex), pegged.peg.and!(pegged.peg.negLookahead!(doublequote), pegged.peg.any))), "INIGrammar.Char")(p);
-        }
-        else
-        {
-            if (auto m = tuple(`Char`, p.end) in memo)
-                return *m;
-            else
-            {
-                TParseTree result = hooked!(pegged.peg.defined!(pegged.peg.fuse!(pegged.peg.or!(pegged.peg.and!(backslash, doublequote), pegged.peg.and!(backslash, backslash), pegged.peg.and!(backslash, pegged.peg.or!(pegged.peg.literal!("b"), pegged.peg.literal!("f"), pegged.peg.literal!("n"), pegged.peg.literal!("r"), pegged.peg.literal!("t"))), pegged.peg.and!(backslash, pegged.peg.literal!("u"), Hex, Hex, Hex, Hex), pegged.peg.and!(pegged.peg.negLookahead!(doublequote), pegged.peg.any))), "INIGrammar.Char"), "Char")(p);
-                memo[tuple(`Char`, p.end)] = result;
-                return result;
-            }
-        }
-    }
-
-    static TParseTree Char(string s)
-    {
-        if(__ctfe)
-        {
-            return         pegged.peg.defined!(pegged.peg.fuse!(pegged.peg.or!(pegged.peg.and!(backslash, doublequote), pegged.peg.and!(backslash, backslash), pegged.peg.and!(backslash, pegged.peg.or!(pegged.peg.literal!("b"), pegged.peg.literal!("f"), pegged.peg.literal!("n"), pegged.peg.literal!("r"), pegged.peg.literal!("t"))), pegged.peg.and!(backslash, pegged.peg.literal!("u"), Hex, Hex, Hex, Hex), pegged.peg.and!(pegged.peg.negLookahead!(doublequote), pegged.peg.any))), "INIGrammar.Char")(TParseTree("", false,[], s));
-        }
-        else
-        {
-            forgetMemo();
-            return hooked!(pegged.peg.defined!(pegged.peg.fuse!(pegged.peg.or!(pegged.peg.and!(backslash, doublequote), pegged.peg.and!(backslash, backslash), pegged.peg.and!(backslash, pegged.peg.or!(pegged.peg.literal!("b"), pegged.peg.literal!("f"), pegged.peg.literal!("n"), pegged.peg.literal!("r"), pegged.peg.literal!("t"))), pegged.peg.and!(backslash, pegged.peg.literal!("u"), Hex, Hex, Hex, Hex), pegged.peg.and!(pegged.peg.negLookahead!(doublequote), pegged.peg.any))), "INIGrammar.Char"), "Char")(TParseTree("", false,[], s));
-        }
-    }
-    static string Char(GetName g)
-    {
-        return "INIGrammar.Char";
-    }
-
-    static TParseTree Number(TParseTree p)
-    {
-        if(__ctfe)
-        {
-            return         pegged.peg.defined!(pegged.peg.fuse!(pegged.peg.or!(pegged.peg.literal!("0"), pegged.peg.and!(pegged.peg.charRange!('1', '9'), pegged.peg.zeroOrMore!(Digit), pegged.peg.option!(pegged.peg.and!(pegged.peg.literal!("."), pegged.peg.zeroOrMore!(Digit)))))), "INIGrammar.Number")(p);
-        }
-        else
-        {
-            if (auto m = tuple(`Number`, p.end) in memo)
-                return *m;
-            else
-            {
-                TParseTree result = hooked!(pegged.peg.defined!(pegged.peg.fuse!(pegged.peg.or!(pegged.peg.literal!("0"), pegged.peg.and!(pegged.peg.charRange!('1', '9'), pegged.peg.zeroOrMore!(Digit), pegged.peg.option!(pegged.peg.and!(pegged.peg.literal!("."), pegged.peg.zeroOrMore!(Digit)))))), "INIGrammar.Number"), "Number")(p);
-                memo[tuple(`Number`, p.end)] = result;
-                return result;
-            }
-        }
-    }
-
-    static TParseTree Number(string s)
-    {
-        if(__ctfe)
-        {
-            return         pegged.peg.defined!(pegged.peg.fuse!(pegged.peg.or!(pegged.peg.literal!("0"), pegged.peg.and!(pegged.peg.charRange!('1', '9'), pegged.peg.zeroOrMore!(Digit), pegged.peg.option!(pegged.peg.and!(pegged.peg.literal!("."), pegged.peg.zeroOrMore!(Digit)))))), "INIGrammar.Number")(TParseTree("", false,[], s));
-        }
-        else
-        {
-            forgetMemo();
-            return hooked!(pegged.peg.defined!(pegged.peg.fuse!(pegged.peg.or!(pegged.peg.literal!("0"), pegged.peg.and!(pegged.peg.charRange!('1', '9'), pegged.peg.zeroOrMore!(Digit), pegged.peg.option!(pegged.peg.and!(pegged.peg.literal!("."), pegged.peg.zeroOrMore!(Digit)))))), "INIGrammar.Number"), "Number")(TParseTree("", false,[], s));
-        }
-    }
-    static string Number(GetName g)
-    {
-        return "INIGrammar.Number";
-    }
-
-    static TParseTree Digit(TParseTree p)
-    {
-        if(__ctfe)
-        {
-            return         pegged.peg.defined!(pegged.peg.charRange!('0', '9'), "INIGrammar.Digit")(p);
-        }
-        else
-        {
-            if (auto m = tuple(`Digit`, p.end) in memo)
-                return *m;
-            else
-            {
-                TParseTree result = hooked!(pegged.peg.defined!(pegged.peg.charRange!('0', '9'), "INIGrammar.Digit"), "Digit")(p);
-                memo[tuple(`Digit`, p.end)] = result;
-                return result;
-            }
-        }
-    }
-
-    static TParseTree Digit(string s)
-    {
-        if(__ctfe)
-        {
-            return         pegged.peg.defined!(pegged.peg.charRange!('0', '9'), "INIGrammar.Digit")(TParseTree("", false,[], s));
-        }
-        else
-        {
-            forgetMemo();
-            return hooked!(pegged.peg.defined!(pegged.peg.charRange!('0', '9'), "INIGrammar.Digit"), "Digit")(TParseTree("", false,[], s));
-        }
-    }
-    static string Digit(GetName g)
-    {
-        return "INIGrammar.Digit";
-    }
-
-    static TParseTree Hex(TParseTree p)
-    {
-        if(__ctfe)
-        {
-            return         pegged.peg.defined!(pegged.peg.or!(pegged.peg.charRange!('0', '9'), pegged.peg.charRange!('A', 'F'), pegged.peg.charRange!('a', 'f')), "INIGrammar.Hex")(p);
-        }
-        else
-        {
-            if (auto m = tuple(`Hex`, p.end) in memo)
-                return *m;
-            else
-            {
-                TParseTree result = hooked!(pegged.peg.defined!(pegged.peg.or!(pegged.peg.charRange!('0', '9'), pegged.peg.charRange!('A', 'F'), pegged.peg.charRange!('a', 'f')), "INIGrammar.Hex"), "Hex")(p);
-                memo[tuple(`Hex`, p.end)] = result;
-                return result;
-            }
-        }
-    }
-
-    static TParseTree Hex(string s)
-    {
-        if(__ctfe)
-        {
-            return         pegged.peg.defined!(pegged.peg.or!(pegged.peg.charRange!('0', '9'), pegged.peg.charRange!('A', 'F'), pegged.peg.charRange!('a', 'f')), "INIGrammar.Hex")(TParseTree("", false,[], s));
-        }
-        else
-        {
-            forgetMemo();
-            return hooked!(pegged.peg.defined!(pegged.peg.or!(pegged.peg.charRange!('0', '9'), pegged.peg.charRange!('A', 'F'), pegged.peg.charRange!('a', 'f')), "INIGrammar.Hex"), "Hex")(TParseTree("", false,[], s));
-        }
-    }
-    static string Hex(GetName g)
-    {
-        return "INIGrammar.Hex";
     }
 
     static TParseTree opCall(TParseTree p)
@@ -675,6 +371,9 @@ struct GenericINIGrammar(TParseTree)
     static void forgetMemo()
     {
         memo = null;
+        import std.traits;
+        static if (is(typeof(Terminals.forgetMemo)))
+            Terminals.forgetMemo();
     }
     }
 }
