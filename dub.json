@@ -3,8 +3,20 @@
 		"logic"
 	],
 	"copyright": "Copyright © 2022, logic",
+	"configurations": [
+		{
+			"name": "default",
+			"targetType": "library"
+		},
+		{
+			"name": "modgen",
+			"targetType": "executable",
+			"stringImportPaths": [ "resources/" ],
+			"versions": [ "COREGRAMMARS_MODGEN" ]
+		}
+	],
 	"dependencies": {
-		"pegged": "~>0.4.5"
+		"pegged": "~master"
 	},
 	"description": "Grammars containing core language features, for creating DSLs and embedded languages",
 	"license": "proprietary",
