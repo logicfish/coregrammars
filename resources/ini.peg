@@ -1,7 +1,7 @@
 INIGrammar:
   INI < (Section / Comment)* :eoi
 
-  Comment <- :"#" (!eol .)* (:eol/:eoi)
+  Comment <~ :"#" (!eol .)* (:eol/:eoi)
 
   Section < Header (Decl Comment? / Comment)*
 

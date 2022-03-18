@@ -4,7 +4,7 @@ This module was automatically generated from the following grammar:
 INIGrammar:
   INI < (Section / Comment)* :eoi
 
-  Comment <- :"#" (!eol .)* (:eol/:eoi)
+  Comment <~ :"#" (!eol .)* (:eol/:eoi)
 
   Section < Header (Decl Comment? / Comment)*
 
@@ -166,7 +166,7 @@ struct GenericINIGrammar(TParseTree)
     {
         if(__ctfe)
         {
-            return         pegged.peg.defined!(pegged.peg.and!(pegged.peg.discard!(pegged.peg.literal!("#")), pegged.peg.zeroOrMore!(pegged.peg.and!(pegged.peg.negLookahead!(eol), pegged.peg.any)), pegged.peg.or!(pegged.peg.discard!(eol), pegged.peg.discard!(eoi))), "INIGrammar.Comment")(p);
+            return         pegged.peg.defined!(pegged.peg.fuse!(pegged.peg.and!(pegged.peg.discard!(pegged.peg.literal!("#")), pegged.peg.zeroOrMore!(pegged.peg.and!(pegged.peg.negLookahead!(eol), pegged.peg.any)), pegged.peg.or!(pegged.peg.discard!(eol), pegged.peg.discard!(eoi)))), "INIGrammar.Comment")(p);
         }
         else
         {
@@ -174,7 +174,7 @@ struct GenericINIGrammar(TParseTree)
                 return *m;
             else
             {
-                TParseTree result = hooked!(pegged.peg.defined!(pegged.peg.and!(pegged.peg.discard!(pegged.peg.literal!("#")), pegged.peg.zeroOrMore!(pegged.peg.and!(pegged.peg.negLookahead!(eol), pegged.peg.any)), pegged.peg.or!(pegged.peg.discard!(eol), pegged.peg.discard!(eoi))), "INIGrammar.Comment"), "Comment")(p);
+                TParseTree result = hooked!(pegged.peg.defined!(pegged.peg.fuse!(pegged.peg.and!(pegged.peg.discard!(pegged.peg.literal!("#")), pegged.peg.zeroOrMore!(pegged.peg.and!(pegged.peg.negLookahead!(eol), pegged.peg.any)), pegged.peg.or!(pegged.peg.discard!(eol), pegged.peg.discard!(eoi)))), "INIGrammar.Comment"), "Comment")(p);
                 memo[tuple(`Comment`, p.end)] = result;
                 return result;
             }
@@ -185,12 +185,12 @@ struct GenericINIGrammar(TParseTree)
     {
         if(__ctfe)
         {
-            return         pegged.peg.defined!(pegged.peg.and!(pegged.peg.discard!(pegged.peg.literal!("#")), pegged.peg.zeroOrMore!(pegged.peg.and!(pegged.peg.negLookahead!(eol), pegged.peg.any)), pegged.peg.or!(pegged.peg.discard!(eol), pegged.peg.discard!(eoi))), "INIGrammar.Comment")(TParseTree("", false,[], s));
+            return         pegged.peg.defined!(pegged.peg.fuse!(pegged.peg.and!(pegged.peg.discard!(pegged.peg.literal!("#")), pegged.peg.zeroOrMore!(pegged.peg.and!(pegged.peg.negLookahead!(eol), pegged.peg.any)), pegged.peg.or!(pegged.peg.discard!(eol), pegged.peg.discard!(eoi)))), "INIGrammar.Comment")(TParseTree("", false,[], s));
         }
         else
         {
             forgetMemo();
-            return hooked!(pegged.peg.defined!(pegged.peg.and!(pegged.peg.discard!(pegged.peg.literal!("#")), pegged.peg.zeroOrMore!(pegged.peg.and!(pegged.peg.negLookahead!(eol), pegged.peg.any)), pegged.peg.or!(pegged.peg.discard!(eol), pegged.peg.discard!(eoi))), "INIGrammar.Comment"), "Comment")(TParseTree("", false,[], s));
+            return hooked!(pegged.peg.defined!(pegged.peg.fuse!(pegged.peg.and!(pegged.peg.discard!(pegged.peg.literal!("#")), pegged.peg.zeroOrMore!(pegged.peg.and!(pegged.peg.negLookahead!(eol), pegged.peg.any)), pegged.peg.or!(pegged.peg.discard!(eol), pegged.peg.discard!(eoi)))), "INIGrammar.Comment"), "Comment")(TParseTree("", false,[], s));
         }
     }
     static string Comment(GetName g)

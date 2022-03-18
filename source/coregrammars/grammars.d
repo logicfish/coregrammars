@@ -56,6 +56,7 @@ unittest {
  testString = "stringVal"
  testInt = 3
  testBool = true
+ testNull = null
  [Section2]
  testString = "string2Val"
  testInt = 13

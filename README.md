@@ -22,13 +22,23 @@ enum input = `
 }`;
 
 enum nodes = JSONGrammar(input);
+
+assert(nodes[0][0][0].matches == ["Number"]);
+assert(nodes[0][0][1].matches == ["42"]);
+
 ```
 And so on for the other grammars.
 
 Here is the list of grammars:
- - Expressions: basic expressions such as strings, numbers and arithmetic
- - INI
- - JSON
- - Markdown
+ - Terminals: basic terminal expressions such as strings, numbers and booleans.
+ - Expressions: arithmetic expressions.
+ - INI: standard INI file syntax
+ - JSON: standard JSON syntax
+ - Markdown: standard markdown syntax
 
-To regenerate the modules, run `dub run -c modgen`.
+These exist as .peg files in the `resources` folder.
+
+To regenerate the modules from .peg files, run:
+```
+dub test -c modgen && dub run -c modgen && dub test
+```
