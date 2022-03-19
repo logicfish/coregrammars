@@ -4,24 +4,3 @@ JSONGrammar:
     Name       <  ^Terminals.String
     Array      <  :'[' (Value (:',' Value)* )? :']'
     Value      < Terminals.Literal / JSONObject / Array
-#    Value  <  Terminals.String
-#            / Terminals.Number
-#            / JSONObject
-#            / Array
-#            / Terminals.Boolean
-#            / Terminals.Null
-
-
-#    True   <- "true"
-#    False  <- "false"
-#    Null   <- "null"
-#    String <~ :doublequote Char* :doublequote
-#    Char   <~ backslash doublequote
-#            / backslash backslash
-#            / backslash [bfnrt]
-#            / backslash 'u' Hex Hex Hex Hex
-#            / (!doublequote .)
-#    Number <~ '0'
-#            / [1-9] Digit* ('.' Digit*)?
-#    Digit  <- [0-9]
-#    Hex    <- [0-9A-Fa-f]
