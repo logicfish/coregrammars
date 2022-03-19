@@ -3,7 +3,7 @@ This module was automatically generated from the following grammar:
 
 JSONGrammar:
     JSONObject <  :'{' (Pair (:',' Pair)*)? :'}'
-    Pair       <  Name :':' Value
+    Pair       <  ^Terminals.String :':' Value
     Name       <  ^Terminals.String
     Array      <  :'[' (Value (:',' Value)* )? :']'
     Value      < Terminals.Literal / JSONObject / Array
@@ -140,7 +140,7 @@ struct GenericJSONGrammar(TParseTree)
     {
         if(__ctfe)
         {
-            return         pegged.peg.defined!(pegged.peg.and!(pegged.peg.wrapAround!(Spacing, Name, Spacing), pegged.peg.discard!(pegged.peg.wrapAround!(Spacing, pegged.peg.literal!(":"), Spacing)), pegged.peg.wrapAround!(Spacing, Value, Spacing)), "JSONGrammar.Pair")(p);
+            return         pegged.peg.defined!(pegged.peg.and!(pegged.peg.keep!(pegged.peg.wrapAround!(Spacing, Terminals.String, Spacing)), pegged.peg.discard!(pegged.peg.wrapAround!(Spacing, pegged.peg.literal!(":"), Spacing)), pegged.peg.wrapAround!(Spacing, Value, Spacing)), "JSONGrammar.Pair")(p);
         }
         else
         {
@@ -148,7 +148,7 @@ struct GenericJSONGrammar(TParseTree)
                 return *m;
             else
             {
-                TParseTree result = hooked!(pegged.peg.defined!(pegged.peg.and!(pegged.peg.wrapAround!(Spacing, Name, Spacing), pegged.peg.discard!(pegged.peg.wrapAround!(Spacing, pegged.peg.literal!(":"), Spacing)), pegged.peg.wrapAround!(Spacing, Value, Spacing)), "JSONGrammar.Pair"), "Pair")(p);
+                TParseTree result = hooked!(pegged.peg.defined!(pegged.peg.and!(pegged.peg.keep!(pegged.peg.wrapAround!(Spacing, Terminals.String, Spacing)), pegged.peg.discard!(pegged.peg.wrapAround!(Spacing, pegged.peg.literal!(":"), Spacing)), pegged.peg.wrapAround!(Spacing, Value, Spacing)), "JSONGrammar.Pair"), "Pair")(p);
                 memo[tuple(`Pair`, p.end)] = result;
                 return result;
             }
@@ -159,12 +159,12 @@ struct GenericJSONGrammar(TParseTree)
     {
         if(__ctfe)
         {
-            return         pegged.peg.defined!(pegged.peg.and!(pegged.peg.wrapAround!(Spacing, Name, Spacing), pegged.peg.discard!(pegged.peg.wrapAround!(Spacing, pegged.peg.literal!(":"), Spacing)), pegged.peg.wrapAround!(Spacing, Value, Spacing)), "JSONGrammar.Pair")(TParseTree("", false,[], s));
+            return         pegged.peg.defined!(pegged.peg.and!(pegged.peg.keep!(pegged.peg.wrapAround!(Spacing, Terminals.String, Spacing)), pegged.peg.discard!(pegged.peg.wrapAround!(Spacing, pegged.peg.literal!(":"), Spacing)), pegged.peg.wrapAround!(Spacing, Value, Spacing)), "JSONGrammar.Pair")(TParseTree("", false,[], s));
         }
         else
         {
             forgetMemo();
-            return hooked!(pegged.peg.defined!(pegged.peg.and!(pegged.peg.wrapAround!(Spacing, Name, Spacing), pegged.peg.discard!(pegged.peg.wrapAround!(Spacing, pegged.peg.literal!(":"), Spacing)), pegged.peg.wrapAround!(Spacing, Value, Spacing)), "JSONGrammar.Pair"), "Pair")(TParseTree("", false,[], s));
+            return hooked!(pegged.peg.defined!(pegged.peg.and!(pegged.peg.keep!(pegged.peg.wrapAround!(Spacing, Terminals.String, Spacing)), pegged.peg.discard!(pegged.peg.wrapAround!(Spacing, pegged.peg.literal!(":"), Spacing)), pegged.peg.wrapAround!(Spacing, Value, Spacing)), "JSONGrammar.Pair"), "Pair")(TParseTree("", false,[], s));
         }
     }
     static string Pair(GetName g)

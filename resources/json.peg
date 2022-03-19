@@ -1,6 +1,5 @@
 JSONGrammar:
     JSONObject <  :'{' (Pair (:',' Pair)*)? :'}'
-    Pair       <  Name :':' Value
-    Name       <  ^Terminals.String
+    Pair       <  ^Terminals.String :':' Value
     Array      <  :'[' (Value (:',' Value)* )? :']'
     Value      < Terminals.Literal / JSONObject / Array
