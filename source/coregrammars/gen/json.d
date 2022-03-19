@@ -4,14 +4,16 @@ This module was automatically generated from the following grammar:
 JSONGrammar:
     JSONObject <  :'{' (Pair (:',' Pair)*)? :'}'
     Pair       <  Name :':' Value
-    Name       <  Terminals.String
+    Name       <  ^Terminals.String
     Array      <  :'[' (Value (:',' Value)* )? :']'
-    Value  <  Terminals.String
-            / Terminals.Number
-            / JSONObject
-            / Array
-            / Terminals.Boolean
-            / Terminals.Null
+    Value      < Terminals.Literal / JSONObject / Array
+#    Value  <  Terminals.String
+#            / Terminals.Number
+#            / JSONObject
+#            / Array
+#            / Terminals.Boolean
+#            / Terminals.Null
+
 
 #    True   <- "true"
 #    False  <- "false"
@@ -195,7 +197,7 @@ struct GenericJSONGrammar(TParseTree)
     {
         if(__ctfe)
         {
-            return         pegged.peg.defined!(pegged.peg.wrapAround!(Spacing, Terminals.String, Spacing), "JSONGrammar.Name")(p);
+            return         pegged.peg.defined!(pegged.peg.keep!(pegged.peg.wrapAround!(Spacing, Terminals.String, Spacing)), "JSONGrammar.Name")(p);
         }
         else
         {
@@ -203,7 +205,7 @@ struct GenericJSONGrammar(TParseTree)
                 return *m;
             else
             {
-                TParseTree result = hooked!(pegged.peg.defined!(pegged.peg.wrapAround!(Spacing, Terminals.String, Spacing), "JSONGrammar.Name"), "Name")(p);
+                TParseTree result = hooked!(pegged.peg.defined!(pegged.peg.keep!(pegged.peg.wrapAround!(Spacing, Terminals.String, Spacing)), "JSONGrammar.Name"), "Name")(p);
                 memo[tuple(`Name`, p.end)] = result;
                 return result;
             }
@@ -214,12 +216,12 @@ struct GenericJSONGrammar(TParseTree)
     {
         if(__ctfe)
         {
-            return         pegged.peg.defined!(pegged.peg.wrapAround!(Spacing, Terminals.String, Spacing), "JSONGrammar.Name")(TParseTree("", false,[], s));
+            return         pegged.peg.defined!(pegged.peg.keep!(pegged.peg.wrapAround!(Spacing, Terminals.String, Spacing)), "JSONGrammar.Name")(TParseTree("", false,[], s));
         }
         else
         {
             forgetMemo();
-            return hooked!(pegged.peg.defined!(pegged.peg.wrapAround!(Spacing, Terminals.String, Spacing), "JSONGrammar.Name"), "Name")(TParseTree("", false,[], s));
+            return hooked!(pegged.peg.defined!(pegged.peg.keep!(pegged.peg.wrapAround!(Spacing, Terminals.String, Spacing)), "JSONGrammar.Name"), "Name")(TParseTree("", false,[], s));
         }
     }
     static string Name(GetName g)
@@ -267,7 +269,7 @@ struct GenericJSONGrammar(TParseTree)
     {
         if(__ctfe)
         {
-            return         pegged.peg.defined!(pegged.peg.or!(pegged.peg.wrapAround!(Spacing, Terminals.String, Spacing), pegged.peg.wrapAround!(Spacing, Terminals.Number, Spacing), pegged.peg.wrapAround!(Spacing, JSONObject, Spacing), pegged.peg.wrapAround!(Spacing, Array, Spacing), pegged.peg.wrapAround!(Spacing, Terminals.Boolean, Spacing), pegged.peg.wrapAround!(Spacing, Terminals.Null, Spacing)), "JSONGrammar.Value")(p);
+            return         pegged.peg.defined!(pegged.peg.or!(pegged.peg.wrapAround!(Spacing, Terminals.Literal, Spacing), pegged.peg.wrapAround!(Spacing, JSONObject, Spacing), pegged.peg.wrapAround!(Spacing, Array, Spacing)), "JSONGrammar.Value")(p);
         }
         else
         {
@@ -275,7 +277,7 @@ struct GenericJSONGrammar(TParseTree)
                 return *m;
             else
             {
-                TParseTree result = hooked!(pegged.peg.defined!(pegged.peg.or!(pegged.peg.wrapAround!(Spacing, Terminals.String, Spacing), pegged.peg.wrapAround!(Spacing, Terminals.Number, Spacing), pegged.peg.wrapAround!(Spacing, JSONObject, Spacing), pegged.peg.wrapAround!(Spacing, Array, Spacing), pegged.peg.wrapAround!(Spacing, Terminals.Boolean, Spacing), pegged.peg.wrapAround!(Spacing, Terminals.Null, Spacing)), "JSONGrammar.Value"), "Value")(p);
+                TParseTree result = hooked!(pegged.peg.defined!(pegged.peg.or!(pegged.peg.wrapAround!(Spacing, Terminals.Literal, Spacing), pegged.peg.wrapAround!(Spacing, JSONObject, Spacing), pegged.peg.wrapAround!(Spacing, Array, Spacing)), "JSONGrammar.Value"), "Value")(p);
                 memo[tuple(`Value`, p.end)] = result;
                 return result;
             }
@@ -286,12 +288,12 @@ struct GenericJSONGrammar(TParseTree)
     {
         if(__ctfe)
         {
-            return         pegged.peg.defined!(pegged.peg.or!(pegged.peg.wrapAround!(Spacing, Terminals.String, Spacing), pegged.peg.wrapAround!(Spacing, Terminals.Number, Spacing), pegged.peg.wrapAround!(Spacing, JSONObject, Spacing), pegged.peg.wrapAround!(Spacing, Array, Spacing), pegged.peg.wrapAround!(Spacing, Terminals.Boolean, Spacing), pegged.peg.wrapAround!(Spacing, Terminals.Null, Spacing)), "JSONGrammar.Value")(TParseTree("", false,[], s));
+            return         pegged.peg.defined!(pegged.peg.or!(pegged.peg.wrapAround!(Spacing, Terminals.Literal, Spacing), pegged.peg.wrapAround!(Spacing, JSONObject, Spacing), pegged.peg.wrapAround!(Spacing, Array, Spacing)), "JSONGrammar.Value")(TParseTree("", false,[], s));
         }
         else
         {
             forgetMemo();
-            return hooked!(pegged.peg.defined!(pegged.peg.or!(pegged.peg.wrapAround!(Spacing, Terminals.String, Spacing), pegged.peg.wrapAround!(Spacing, Terminals.Number, Spacing), pegged.peg.wrapAround!(Spacing, JSONObject, Spacing), pegged.peg.wrapAround!(Spacing, Array, Spacing), pegged.peg.wrapAround!(Spacing, Terminals.Boolean, Spacing), pegged.peg.wrapAround!(Spacing, Terminals.Null, Spacing)), "JSONGrammar.Value"), "Value")(TParseTree("", false,[], s));
+            return hooked!(pegged.peg.defined!(pegged.peg.or!(pegged.peg.wrapAround!(Spacing, Terminals.Literal, Spacing), pegged.peg.wrapAround!(Spacing, JSONObject, Spacing), pegged.peg.wrapAround!(Spacing, Array, Spacing)), "JSONGrammar.Value"), "Value")(TParseTree("", false,[], s));
         }
     }
     static string Value(GetName g)

@@ -1,14 +1,16 @@
 JSONGrammar:
     JSONObject <  :'{' (Pair (:',' Pair)*)? :'}'
     Pair       <  Name :':' Value
-    Name       <  Terminals.String
+    Name       <  ^Terminals.String
     Array      <  :'[' (Value (:',' Value)* )? :']'
-    Value  <  Terminals.String
-            / Terminals.Number
-            / JSONObject
-            / Array
-            / Terminals.Boolean
-            / Terminals.Null
+    Value      < Terminals.Literal / JSONObject / Array
+#    Value  <  Terminals.String
+#            / Terminals.Number
+#            / JSONObject
+#            / Array
+#            / Terminals.Boolean
+#            / Terminals.Null
+
 
 #    True   <- "true"
 #    False  <- "false"

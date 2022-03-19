@@ -16,7 +16,7 @@
 		}
 	],
 	"dependencies": {
-		"pegged": "~master"
+		"pegged": "~>0.4.5"
 	},
 	"description": "Grammars containing core language features, for creating DSLs and embedded languages",
 	"license": "Apache License 2.0",

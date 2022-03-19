@@ -2,23 +2,8 @@
 This module was automatically generated from the following grammar:
 
 Terminals:
-#  Literal < String / Number / Boolean / Null
 
-#String <~ doublequote (!doublequote Char)* doublequote
-#
-#Char   <~ backslash ( doublequote  # '\' Escapes
-#                    / quote
-#                    / backslash
-#                    / [bfnrt]
-#                    / [0-2][0-7][0-7]
-#                    / [0-7][0-7]?
-#                    / 'x' Hex Hex
-#                    / 'u' Hex Hex Hex Hex
-#                    / 'U' Hex Hex Hex Hex Hex Hex Hex Hex
-#                    )
-#         / . # Or any char, really
-#
-#Hex     <- [0-9a-fA-F]
+Literal < ^String / ^Number / Boolean / ^Null
 
 String <~ :doublequote Char* :doublequote
 
@@ -73,6 +58,7 @@ struct GenericTerminals(TParseTree)
     static TParseTree[Tuple!(string, size_t)] memo;
     static this()
     {
+        rules["Literal"] = toDelegate(&Literal);
         rules["String"] = toDelegate(&String);
         rules["Char"] = toDelegate(&Char);
         rules["Hex"] = toDelegate(&Hex);
@@ -148,6 +134,42 @@ struct GenericTerminals(TParseTree)
     mixin decimateTree;
 
     alias spacing Spacing;
+
+    static TParseTree Literal(TParseTree p)
+    {
+        if(__ctfe)
+        {
+            return         pegged.peg.defined!(pegged.peg.or!(pegged.peg.keep!(pegged.peg.wrapAround!(Spacing, String, Spacing)), pegged.peg.keep!(pegged.peg.wrapAround!(Spacing, Number, Spacing)), pegged.peg.wrapAround!(Spacing, Boolean, Spacing), pegged.peg.keep!(pegged.peg.wrapAround!(Spacing, Null, Spacing))), "Terminals.Literal")(p);
+        }
+        else
+        {
+            if (auto m = tuple(`Literal`, p.end) in memo)
+                return *m;
+            else
+            {
+                TParseTree result = hooked!(pegged.peg.defined!(pegged.peg.or!(pegged.peg.keep!(pegged.peg.wrapAround!(Spacing, String, Spacing)), pegged.peg.keep!(pegged.peg.wrapAround!(Spacing, Number, Spacing)), pegged.peg.wrapAround!(Spacing, Boolean, Spacing), pegged.peg.keep!(pegged.peg.wrapAround!(Spacing, Null, Spacing))), "Terminals.Literal"), "Literal")(p);
+                memo[tuple(`Literal`, p.end)] = result;
+                return result;
+            }
+        }
+    }
+
+    static TParseTree Literal(string s)
+    {
+        if(__ctfe)
+        {
+            return         pegged.peg.defined!(pegged.peg.or!(pegged.peg.keep!(pegged.peg.wrapAround!(Spacing, String, Spacing)), pegged.peg.keep!(pegged.peg.wrapAround!(Spacing, Number, Spacing)), pegged.peg.wrapAround!(Spacing, Boolean, Spacing), pegged.peg.keep!(pegged.peg.wrapAround!(Spacing, Null, Spacing))), "Terminals.Literal")(TParseTree("", false,[], s));
+        }
+        else
+        {
+            forgetMemo();
+            return hooked!(pegged.peg.defined!(pegged.peg.or!(pegged.peg.keep!(pegged.peg.wrapAround!(Spacing, String, Spacing)), pegged.peg.keep!(pegged.peg.wrapAround!(Spacing, Number, Spacing)), pegged.peg.wrapAround!(Spacing, Boolean, Spacing), pegged.peg.keep!(pegged.peg.wrapAround!(Spacing, Null, Spacing))), "Terminals.Literal"), "Literal")(TParseTree("", false,[], s));
+        }
+    }
+    static string Literal(GetName g)
+    {
+        return "Terminals.Literal";
+    }
 
     static TParseTree String(TParseTree p)
     {
@@ -691,7 +713,7 @@ struct GenericTerminals(TParseTree)
 
     static TParseTree opCall(TParseTree p)
     {
-        TParseTree result = decimateTree(String(p));
+        TParseTree result = decimateTree(Literal(p));
         result.children = [result];
         result.name = "Terminals";
         return result;

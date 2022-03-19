@@ -3,22 +3,10 @@ INIGrammar:
 
   Comment <~ :"#" (!eol .)* (:eol/:eoi)
 
-  Section < Header (Decl Comment? / Comment)*
+  Section < Header :Comment? (Decl :Comment? / :Comment)*
 
-  #Section < Header Decl*
+  Header < :"[" identifier (:"." identifier)? :"]"
 
-  Header < :"[" qualifiedIdentifier :"]"
-
-#  Decl < identifier :"=" Value :eol
   Decl < identifier :"=" Literal
-#  Decl < identifier :"=" ^Terminals.Literal
 
-  #Value < String / Number / Boolean / Null
-  #Value < Terminals.Literal
-
-  #String <- Terminals.String
-  #Number <- Terminals.Number
-  #Boolean <- Terminals.Boolean
-  #Null <- Terminals.Null
-  #Literal < Terminals.Literal
   Literal < ^Terminals.String / ^Terminals.Number / Terminals.Boolean / ^Terminals.Null
