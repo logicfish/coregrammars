@@ -4,7 +4,6 @@ This module was automatically generated from the following grammar:
 JSONGrammar:
     JSONObject <  :'{' (Pair (:',' Pair)*)? :'}'
     Pair       <  ^Terminals.String :':' Value
-    Name       <  ^Terminals.String
     Array      <  :'[' (Value (:',' Value)* )? :']'
     Value      < Terminals.Literal / JSONObject / Array
 
@@ -36,7 +35,6 @@ struct GenericJSONGrammar(TParseTree)
     {
         rules["JSONObject"] = toDelegate(&JSONObject);
         rules["Pair"] = toDelegate(&Pair);
-        rules["Name"] = toDelegate(&Name);
         rules["Array"] = toDelegate(&Array);
         rules["Value"] = toDelegate(&Value);
         rules["Spacing"] = toDelegate(&Spacing);
@@ -170,42 +168,6 @@ struct GenericJSONGrammar(TParseTree)
     static string Pair(GetName g)
     {
         return "JSONGrammar.Pair";
-    }
-
-    static TParseTree Name(TParseTree p)
-    {
-        if(__ctfe)
-        {
-            return         pegged.peg.defined!(pegged.peg.keep!(pegged.peg.wrapAround!(Spacing, Terminals.String, Spacing)), "JSONGrammar.Name")(p);
-        }
-        else
-        {
-            if (auto m = tuple(`Name`, p.end) in memo)
-                return *m;
-            else
-            {
-                TParseTree result = hooked!(pegged.peg.defined!(pegged.peg.keep!(pegged.peg.wrapAround!(Spacing, Terminals.String, Spacing)), "JSONGrammar.Name"), "Name")(p);
-                memo[tuple(`Name`, p.end)] = result;
-                return result;
-            }
-        }
-    }
-
-    static TParseTree Name(string s)
-    {
-        if(__ctfe)
-        {
-            return         pegged.peg.defined!(pegged.peg.keep!(pegged.peg.wrapAround!(Spacing, Terminals.String, Spacing)), "JSONGrammar.Name")(TParseTree("", false,[], s));
-        }
-        else
-        {
-            forgetMemo();
-            return hooked!(pegged.peg.defined!(pegged.peg.keep!(pegged.peg.wrapAround!(Spacing, Terminals.String, Spacing)), "JSONGrammar.Name"), "Name")(TParseTree("", false,[], s));
-        }
-    }
-    static string Name(GetName g)
-    {
-        return "JSONGrammar.Name";
     }
 
     static TParseTree Array(TParseTree p)

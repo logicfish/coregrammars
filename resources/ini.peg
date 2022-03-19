@@ -7,6 +7,4 @@ INIGrammar:
 
   Header < :"[" identifier (:"." identifier)? :"]"
 
-  Decl < identifier :"=" Literal
-
-  Literal < ^Terminals.String / ^Terminals.Number / Terminals.Boolean / ^Terminals.Null
+  Decl < identifier :"=" Terminals.Literal
