@@ -2,6 +2,8 @@
 This module was automatically generated from the following grammar:
 
 Terminals:
+#  Literal < String / Number / Boolean / Null
+
 #String <~ doublequote (!doublequote Char)* doublequote
 #
 #Char   <~ backslash ( doublequote  # '\' Escapes
@@ -41,7 +43,7 @@ Hexa       <~ :"0x"[0-9a-fA-F]+
 Binary     <~ :"0b" [01] [01_]*
 Sign       <- '-' / '+'
 
-Boolean < True / False
+Boolean <- ^True / ^False
 
 True   <- "true"
 False  <- "false"
@@ -547,7 +549,7 @@ struct GenericTerminals(TParseTree)
     {
         if(__ctfe)
         {
-            return         pegged.peg.defined!(pegged.peg.or!(pegged.peg.wrapAround!(Spacing, True, Spacing), pegged.peg.wrapAround!(Spacing, False, Spacing)), "Terminals.Boolean")(p);
+            return         pegged.peg.defined!(pegged.peg.or!(pegged.peg.keep!(True), pegged.peg.keep!(False)), "Terminals.Boolean")(p);
         }
         else
         {
@@ -555,7 +557,7 @@ struct GenericTerminals(TParseTree)
                 return *m;
             else
             {
-                TParseTree result = hooked!(pegged.peg.defined!(pegged.peg.or!(pegged.peg.wrapAround!(Spacing, True, Spacing), pegged.peg.wrapAround!(Spacing, False, Spacing)), "Terminals.Boolean"), "Boolean")(p);
+                TParseTree result = hooked!(pegged.peg.defined!(pegged.peg.or!(pegged.peg.keep!(True), pegged.peg.keep!(False)), "Terminals.Boolean"), "Boolean")(p);
                 memo[tuple(`Boolean`, p.end)] = result;
                 return result;
             }
@@ -566,12 +568,12 @@ struct GenericTerminals(TParseTree)
     {
         if(__ctfe)
         {
-            return         pegged.peg.defined!(pegged.peg.or!(pegged.peg.wrapAround!(Spacing, True, Spacing), pegged.peg.wrapAround!(Spacing, False, Spacing)), "Terminals.Boolean")(TParseTree("", false,[], s));
+            return         pegged.peg.defined!(pegged.peg.or!(pegged.peg.keep!(True), pegged.peg.keep!(False)), "Terminals.Boolean")(TParseTree("", false,[], s));
         }
         else
         {
             forgetMemo();
-            return hooked!(pegged.peg.defined!(pegged.peg.or!(pegged.peg.wrapAround!(Spacing, True, Spacing), pegged.peg.wrapAround!(Spacing, False, Spacing)), "Terminals.Boolean"), "Boolean")(TParseTree("", false,[], s));
+            return hooked!(pegged.peg.defined!(pegged.peg.or!(pegged.peg.keep!(True), pegged.peg.keep!(False)), "Terminals.Boolean"), "Boolean")(TParseTree("", false,[], s));
         }
     }
     static string Boolean(GetName g)

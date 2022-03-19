@@ -10,22 +10,15 @@ INIGrammar:
   Header < :"[" qualifiedIdentifier :"]"
 
 #  Decl < identifier :"=" Value :eol
-#  Decl < identifier :"=" (String / Number) :eol
-  Decl < identifier :"=" Value
+  Decl < identifier :"=" Literal
+#  Decl < identifier :"=" ^Terminals.Literal
 
-  Value < Terminals.String / Terminals.Number / Terminals.Boolean / Terminals.Null
+  #Value < String / Number / Boolean / Null
+  #Value < Terminals.Literal
 
-#  String <~ :doublequote Char* :doublequote
-#
-#  Char   <~ backslash doublequote
-#          / backslash backslash
-#          / backslash [bfnrt]
-#          / backslash 'u' Hex Hex Hex Hex
-#          / (!doublequote .)
-#
-#  Number <~ '0'
-#          / [1-9] Digit* ('.' Digit*)?
-#
-#  Digit  <- [0-9]
-#
-#  Hex    <- [0-9A-Fa-f]
+  #String <- Terminals.String
+  #Number <- Terminals.Number
+  #Boolean <- Terminals.Boolean
+  #Null <- Terminals.Null
+  #Literal < Terminals.Literal
+  Literal < ^Terminals.String / ^Terminals.Number / Terminals.Boolean / ^Terminals.Null
