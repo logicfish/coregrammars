@@ -1,11 +1,11 @@
-/++
+/+ DO NOT EDIT BY HAND!
 This module was automatically generated from the following grammar:
 
-JSONGrammar:
-    JSONObject <  :'{' (Pair (:',' Pair)*)? :'}'
-    Pair       <  ^Terminals.String :':' Value
-    Array      <  :'[' (Value (:',' Value)* )? :']'
-    Value      < Terminals.Literal / JSONObject / Array
+JSONGrammar:
+    JSONObject <  :'{' (Pair (:',' Pair)*)? :'}'
+    Pair       <  ^Terminals.String :':' Value
+    Array      <  :'[' (Value (:',' Value)* )? :']'
+    Value      < Terminals.Literal / JSONObject / Array
 
 
 +/
@@ -18,7 +18,7 @@ public import pegged.peg;
 import std.algorithm: startsWith;
 import std.functional: toDelegate;
 
-struct GenericJSONGrammar(TParseTree)
+@safe struct GenericJSONGrammar(TParseTree)
 {
     import std.functional : toDelegate;
     import pegged.dynamic.grammar;
@@ -26,12 +26,12 @@ struct GenericJSONGrammar(TParseTree)
     struct JSONGrammar
     {
     enum name = "JSONGrammar";
-    static ParseTree delegate(ParseTree)[string] before;
-    static ParseTree delegate(ParseTree)[string] after;
-    static ParseTree delegate(ParseTree)[string] rules;
+    static ParseTree delegate(ParseTree) @safe [string] before;
+    static ParseTree delegate(ParseTree) @safe [string] after;
+    static ParseTree delegate(ParseTree) @safe [string] rules;
     import std.typecons:Tuple, tuple;
     static TParseTree[Tuple!(string, size_t)] memo;
-    static this()
+    static this() @trusted
     {
         rules["JSONObject"] = toDelegate(&JSONObject);
         rules["Pair"] = toDelegate(&Pair);
@@ -42,7 +42,7 @@ struct GenericJSONGrammar(TParseTree)
 
     template hooked(alias r, string name)
     {
-        static ParseTree hooked(ParseTree p)
+        static ParseTree hooked(ParseTree p) @safe
         {
             ParseTree result;
 
@@ -61,13 +61,13 @@ struct GenericJSONGrammar(TParseTree)
             return result;
         }
 
-        static ParseTree hooked(string input)
+        static ParseTree hooked(string input) @safe
         {
             return hooked!(r, name)(ParseTree("",false,[],input));
         }
     }
 
-    static void addRuleBefore(string parentRule, string ruleSyntax)
+    static void addRuleBefore(string parentRule, string ruleSyntax) @safe
     {
         // enum name is the current grammar name
         DynamicGrammar dg = pegged.dynamic.grammar.grammar(name ~ ": " ~ ruleSyntax, rules);
@@ -77,7 +77,7 @@ struct GenericJSONGrammar(TParseTree)
         before[parentRule] = rules[dg.startingRule];
     }
 
-    static void addRuleAfter(string parentRule, string ruleSyntax)
+    static void addRuleAfter(string parentRule, string ruleSyntax) @safe
     {
         // enum name is the current grammar named
         DynamicGrammar dg = pegged.dynamic.grammar.grammar(name ~ ": " ~ ruleSyntax, rules);
@@ -89,7 +89,7 @@ struct GenericJSONGrammar(TParseTree)
         after[parentRule] = rules[dg.startingRule];
     }
 
-    static bool isRule(string s)
+    static bool isRule(string s) pure nothrow @nogc
     {
         import std.algorithm : startsWith;
         return s.startsWith("JSONGrammar.");

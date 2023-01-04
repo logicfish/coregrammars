@@ -1,4 +1,4 @@
-/++
+/+ DO NOT EDIT BY HAND!
 This module was automatically generated from the following grammar:
 
 INIGrammar:
@@ -23,7 +23,7 @@ public import pegged.peg;
 import std.algorithm: startsWith;
 import std.functional: toDelegate;
 
-struct GenericINIGrammar(TParseTree)
+@safe struct GenericINIGrammar(TParseTree)
 {
     import std.functional : toDelegate;
     import pegged.dynamic.grammar;
@@ -31,12 +31,12 @@ struct GenericINIGrammar(TParseTree)
     struct INIGrammar
     {
     enum name = "INIGrammar";
-    static ParseTree delegate(ParseTree)[string] before;
-    static ParseTree delegate(ParseTree)[string] after;
-    static ParseTree delegate(ParseTree)[string] rules;
+    static ParseTree delegate(ParseTree) @safe [string] before;
+    static ParseTree delegate(ParseTree) @safe [string] after;
+    static ParseTree delegate(ParseTree) @safe [string] rules;
     import std.typecons:Tuple, tuple;
     static TParseTree[Tuple!(string, size_t)] memo;
-    static this()
+    static this() @trusted
     {
         rules["INI"] = toDelegate(&INI);
         rules["Comment"] = toDelegate(&Comment);
@@ -48,7 +48,7 @@ struct GenericINIGrammar(TParseTree)
 
     template hooked(alias r, string name)
     {
-        static ParseTree hooked(ParseTree p)
+        static ParseTree hooked(ParseTree p) @safe
         {
             ParseTree result;
 
@@ -67,13 +67,13 @@ struct GenericINIGrammar(TParseTree)
             return result;
         }
 
-        static ParseTree hooked(string input)
+        static ParseTree hooked(string input) @safe
         {
             return hooked!(r, name)(ParseTree("",false,[],input));
         }
     }
 
-    static void addRuleBefore(string parentRule, string ruleSyntax)
+    static void addRuleBefore(string parentRule, string ruleSyntax) @safe
     {
         // enum name is the current grammar name
         DynamicGrammar dg = pegged.dynamic.grammar.grammar(name ~ ": " ~ ruleSyntax, rules);
@@ -83,7 +83,7 @@ struct GenericINIGrammar(TParseTree)
         before[parentRule] = rules[dg.startingRule];
     }
 
-    static void addRuleAfter(string parentRule, string ruleSyntax)
+    static void addRuleAfter(string parentRule, string ruleSyntax) @safe
     {
         // enum name is the current grammar named
         DynamicGrammar dg = pegged.dynamic.grammar.grammar(name ~ ": " ~ ruleSyntax, rules);
@@ -95,7 +95,7 @@ struct GenericINIGrammar(TParseTree)
         after[parentRule] = rules[dg.startingRule];
     }
 
-    static bool isRule(string s)
+    static bool isRule(string s) pure nothrow @nogc
     {
         import std.algorithm : startsWith;
         return s.startsWith("INIGrammar.");

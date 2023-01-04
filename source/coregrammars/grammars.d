@@ -26,8 +26,8 @@ version(COREGRAMMARS_MODGEN) {
       CoreGrammarsFolder.rmdirRecurse;
       CoreGrammarsFolder.mkdirRecurse;
       static foreach(g,h;CoreGrammars) {
-        import std.experimental.logger;
-        sharedLog.log("Module generator: ",g);
+        import std.logger;
+        log("Module generator: ",g);
         asModule(CoreGrammarsPackage ~ "." ~ g,
             CoreGrammarsFolder ~ g,
             import(g ~ ".peg"),
