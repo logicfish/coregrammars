@@ -45,9 +45,9 @@ version(COREGRAMMARS_MODGEN) {
   enum CoreGrammars = [ "terms", "expr", "ini", "json", "md" ];
 }
 
-unittest {
+//unittest {
   //import coregrammars.gen.expr;
-}
+//}
 
 unittest {
   //import coregrammars.gen.ini;

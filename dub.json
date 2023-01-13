@@ -6,6 +6,7 @@
 	"configurations": [
 		{
 			"name": "default",
+			"stringImportPaths": [ "resources/" ],
 			"targetType": "library"
 		},
 		{
