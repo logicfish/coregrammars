@@ -1,4 +1,4 @@
-module coregrammars.exprparse;
+module coregrammars.parsers.expr_p;
 
 private import std.conv : to;
 

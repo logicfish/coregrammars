@@ -1,4 +1,4 @@
-module coregrammars.jsonparse;
+module coregrammars.parsers.json_p;
 
 private import std.algorithm : filter,map,uniq;
 private import std.array : array;

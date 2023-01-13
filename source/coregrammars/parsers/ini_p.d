@@ -1,4 +1,4 @@
-module metad.parsers.ini_p;
+module coregrammars.parsers.ini_p;
 
 private import std.algorithm : filter,map,sort,uniq;
 private import std.array : array;
