@@ -6,6 +6,9 @@ nodes into tuples at compile time.
 
 These are in the package coregrammars.parsers .
 
+They can also process files at runtime into a Variant[string] reference.
+This can be used to update field values a tuple parsed at compile time.
+
 To use the grammars:
 ```
 import coregrammars.gen.json;
@@ -117,7 +120,35 @@ testKey = "test value"
     static assert(x.Obj.Member2[2] == 2);
 ```
 
+To load an ini file into an array Variant[string] at runtime
+
+```
+	auto txt = readText("./resources/tests/testB.ini");
+	auto nodes = INIGrammar(txt);
+	Variant[string] vals;
+	parse_node(vals,nodes);
+
+	assert(vals["TestSect"]["A"]["testKeyA2"] == "test value B ***");
+```
+
+Load a file at runtime and override the values in a tuple created at
+compile time:
+
+```
+    enum Nodes = INIGrammar(import("tests/test.ini"));
+	auto nodesTuple = parse_node!Nodes;
+
+	auto txt = readText("./resources/tests/testB.ini");
+	auto nodes = INIGrammar(txt);
+	Variant[string] vals;
+	parse_node(vals,nodes);
+	set_fields!(typeof(nodesTuple))(nodesTuple,vals);
+
+	assert(nodesTuple.TestSect.A.testKeyA2 == "test value B ***");
+```
+
 ### TODO
+
 The terminals grammar is losing the type 
 information for Terminals.Number nodes.
 At this time all numbers are processed into

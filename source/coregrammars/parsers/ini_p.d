@@ -41,17 +41,11 @@ template parse_node(alias T)
 template ini_find_section(alias T,string n)
 	if(T.name == "INIGrammar.INI")
 {
-	//enum __f = 
 	enum ini_find_section = T.children.filter!((e)=>
 			e.name == "INIGrammar.Section"
 			&& e.children[0].matches.length == 1
 			&& e.children[0].matches[0] == n
 		);
-	/*static if(!__f.empty) {
-		enum ini_find_section = __f.front;
-	} else {
-		enum ini_find_section = only();
-	}*/
 }
 
 template ini_find_subsection(alias T,string name,string sub) 
@@ -248,30 +242,15 @@ private import std.typecons;
 void set_fields(R)(ref R res,Variant[string] values) 
 	if(isTuple!R)
 {
-	//int inx = 0;
 	static foreach(field;R.fieldNames) {
 		if(field in values) {
-			/*alias f = mixin("res."~field);
-			static if(isTuple!(typeof(f))) {
-				set_fields!(
-					typeof(f)
-				)(
-					f,values[field]
-				);
-			} else {
-				mixin("res."~field~" = values["~field~"];");
-			}*/
-			//static if(isTuple!(R.Types[inx])) {
 			alias f = mixin("res."~field);
 			static if(isTuple!(typeof(f))) {
 				set_fields!(typeof(f))(mixin("res."~field),values[field].get!(Variant[string]));
 			} else {
-				//res[inx] = values[field];
-				//f = values[field];
 				mixin("res."~field~" = values[\""~field~"\"].get!(typeof(res."~field~"));");
 			}
 		}
-		//inx++;
 	}
 }
 
@@ -291,8 +270,7 @@ unittest {
 	Variant[string] vals;
 	parse_node(vals,nodes);
 	set_fields!(typeof(nodesTuple))(nodesTuple,vals);
-	//assert(vals["TestSect"]["A"]["testKeyA2"] == "test value B ***");
-	//assert(vals["TestSect"]["A"]["testKeyA2"] == "test value B");
+
 	assert(nodesTuple.TestSect.A.testKeyA2 == "test value B ***");
 
 }
