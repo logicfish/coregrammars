@@ -13,7 +13,7 @@ template ini_parse_node_list(T...) {
 	static if(T.length == 0) {
 		enum ini_parse_node_list = tuple();
 	} else static if(T.length == 1) {
-		enum ini_parse_node_list = parse_node!(T[0]);
+		alias ini_parse_node_list = parse_node!(T[0]);
 	} else {
 		enum ini_parse_node_list = parse_node!(T[0]) ~ ini_parse_node_list!(T[1..$]);
 	}
@@ -23,13 +23,13 @@ template ini_parse_node_list(T...) {
 template parse_node(alias T) 
 	if(T.name == "INIGrammar" && T.children.length == 1)
 {
-	enum parse_node = parse_node!(T.children[0]);
+	alias parse_node = parse_node!(T.children[0]);
 }
 
 template parse_node(alias T) 
 	if(T.name == "INIGrammar.INI")
 {
-	enum parse_node = ini_parse_all_sections!T;
+	alias parse_node = ini_parse_all_sections!T;
 }
 
 template parse_node(alias T)
@@ -82,7 +82,7 @@ template ini_list_subsection_names(alias T,string n)
 template ini_parse_all_sections(alias T) 
 	if(T.name == "INIGrammar.INI")
 {
-	enum ini_parse_all_sections = ini_parse_sections!(T,aliasSeqOf!(ini_list_section_names!(T)));
+	alias ini_parse_all_sections = ini_parse_sections!(T,aliasSeqOf!(ini_list_section_names!(T)));
 }
 
 template ini_parse_sections(alias T,names...) 
@@ -108,7 +108,7 @@ template ini_parse_sections(alias T,names...)
 				));
 		}
 	} else {
-		enum next = ini_parse_sections!(T,names[1..$]);
+		alias next = ini_parse_sections!(T,names[1..$]);
 		alias sect = ini_find_section!(T,names[0]);
 
 		static if(!sect.empty) {
@@ -140,7 +140,7 @@ template ini_parse_subsections(alias T,string section,names...) {
 			).array.sort!("a.matches[0] < b.matches[0]")
 		)));
 	} else {
-		enum next = ini_parse_subsections!(T,section,names[1..$]);
+		alias next = ini_parse_subsections!(T,section,names[1..$]);
 
 		enum ini_parse_subsections =  tuple!(names[0])(ini_parse_node_list!(
 			aliasSeqOf!(ini_find_subsection!(T,section,names[0]).children.filter!(

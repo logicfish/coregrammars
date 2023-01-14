@@ -14,7 +14,7 @@ template json_parse_node_list(T...) {
 	static if(T.length == 0) {
 		enum json_parse_node_list = tuple();
 	} else static if(T.length == 1) {
-		enum json_parse_node_list = parse_node!(T[0]);
+		alias json_parse_node_list = parse_node!(T[0]);
 	} else {
 		enum json_parse_node_list = parse_node!(T[0]) ~ json_parse_node_list!(T[1..$]);
 	}
@@ -33,13 +33,13 @@ template json_parse_node_array(T...) {
 template parse_node(alias T) 
     if(T.name == "JSONGrammar" && T.children.length == 1)
 {
-    enum parse_node = parse_node!(T.children[0]);
+    alias parse_node = parse_node!(T.children[0]);
 }
 
 template parse_node(alias T) 
     if(T.name == "JSONGrammar.JSONObject")
 {
-    enum parse_node = json_parse_node_list!(aliasSeqOf!(T.children));
+    alias parse_node = json_parse_node_list!(aliasSeqOf!(T.children));
 }
 
 template parse_node(alias T) 
@@ -69,33 +69,33 @@ template parse_node(alias T)
     static if(
         T.children[0].name == "JSONGrammar.JSONObject" 
     ) {
-        enum parse_node = terminal_value!(T.children[0]);
+        alias parse_node = terminal_value!(T.children[0]);
     } else static if (
         T.children[0].name == "JSONGrammar.Array" 
     ) {
-        enum parse_node = parse_node!(T.children[0]);
+        alias parse_node = parse_node!(T.children[0]);
     } else {
-        enum parse_node = coregrammars.parsers.expr_p.terminal_value!(T.children[0]);
+        alias parse_node = coregrammars.parsers.expr_p.terminal_value!(T.children[0]);
     }
 }
 
 template parse_node(alias T) 
     if(T.name == "JSONGrammar.Array")
 {
-    enum parse_node = json_parse_node_array!(aliasSeqOf!(T.children));
+    alias parse_node = json_parse_node_array!(aliasSeqOf!(T.children));
     //static immutable terminal_value = [];
 }
 
 template terminal_value(alias T) 
     if(T.name == "JSONGrammar.Array")
 {
-    enum terminal_value = json_parse_node_list!(aliasSeqOf!(T.children));
+    alias terminal_value = json_parse_node_list!(aliasSeqOf!(T.children));
 }
 
 template terminal_value(alias T) 
 	if(T.name == "JSONGrammar.JSONObject")
 {
-	enum terminal_value = json_parse_node_list!(aliasSeqOf!(T.children));
+	alias terminal_value = json_parse_node_list!(aliasSeqOf!(T.children));
 }
 
 unittest {

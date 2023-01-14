@@ -5,7 +5,7 @@ private import std.conv : to;
 template terminal_value(alias T) 
 	if(T.name == "Terminals.Literal")
 {
-	enum terminal_value = terminal_value!(T.children[0]);
+	alias terminal_value = terminal_value!(T.children[0]);
 }
 
 
