@@ -86,7 +86,6 @@ testKey = "test value"
 	static assert(x.TestSect.A.testKeyA2 == "test value B");
 	static assert(x.TestSect.testBool == false);
 	static assert(x.TestSect2.A.testIntA == 22);
-    
 ```
 
 ```
@@ -116,5 +115,11 @@ testKey = "test value"
     static assert(x.Array[2] == 2);
     static assert(x.Array2[1][1] == 1);
     static assert(x.Obj.Member2[2] == 2);
-
 ```
+
+### TODO
+The terminals grammar is losing the type 
+information for Terminals.Number nodes.
+At this time all numbers are processed into
+doubles, however it should be simple to 
+implement int as well.

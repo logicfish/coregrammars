@@ -8,7 +8,7 @@ private import std.conv : to;
 
 private import coregrammars.grammars;
 private import coregrammars.gen.json;
-private import coregrammars.exprparse;
+private import coregrammars.parsers.expr_p;
 
 template json_parse_node_list(T...) {
 	static if(T.length == 0) {
@@ -75,7 +75,7 @@ template parse_node(alias T)
     ) {
         enum parse_node = parse_node!(T.children[0]);
     } else {
-        enum parse_node = coregrammars.exprparse.terminal_value!(T.children[0]);
+        enum parse_node = coregrammars.parsers.expr_p.terminal_value!(T.children[0]);
     }
 }
 
