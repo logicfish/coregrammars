@@ -72,22 +72,48 @@ unittest {
 
 }
 
-
-
 /++
 Wrap a tuple in a type that can access fields using [string].
 ++/
 struct tuple_accessor(T) {
 	T t;
 	alias t this;
-	//auto opIndex(const string id) {
-		//auto v = get_named_value(t,[id]);
-		//if(isTuple!(typeof(v))) {
-		//	return tuple_accessor(v);
-		//} else {
-		//	return v;
-		//}
-	//}
+	this(T _t) {
+		t = _t;
+	}
+	auto opIndex(const string id) {
+		static foreach(n;t.fieldNames) {
+			if(n == id) {
+				alias v = typeof(mixin("t."~n));
+				static if (isTuple!v) {
+					return Variant(tuple_accessor!v(mixin("t."~n)));
+				} else {
+					return Variant(mixin("t."~n));
+				}
+			}
+		}
+		assert(0);
+	}
+}
+
+unittest {
+	auto t = tuple!(
+			string,"strVal",int,"intVal",Tuple!(double,"doubleVal",string,"strVal2"),"tupleVal"
+		)(
+			"String",
+			23,
+		tuple!(
+			double,"doubleVal",string,"strVal2"
+		)(
+			10.2,
+			"String2"
+		)
+	);
+	auto a = tuple_accessor!(typeof(t))(t);
+	assert(a["strVal"] == "String");
+	assert(a["intVal"] == 23);
+	assert(a["tupleVal"].get!(tuple_accessor!(Tuple!(double,"doubleVal",string,"strVal2")))["strVal2"] == "String2");
+	//assert(a["tupleVal"]["strVal2"] == "String2");
 }
 
 /++
@@ -96,12 +122,32 @@ Wrap a Variant[string] array in a type that can access fields using member names
 struct variant_accessor {
 	Variant[string] vars;
 	alias vars this;
-	auto opDispatch(string s)() {
-		auto v = vars[s];
-		if(is(v.type == Variant[])) {
-			return variant_accessor(v);
-		} else {
-			return v;
+	this(Variant[string] v) {
+		vars = v;
+	}
+	template opDispatch(const string s) {
+		auto opDispatch() {
+			auto v = vars[s];
+			if(v.type is typeid(Variant[string])) {
+				return Variant(variant_accessor(v.get!(Variant[string])));
+			} else {
+				return v;
+			}
 		}
 	}
+}
+
+unittest {
+	Variant[string] vars;
+	Variant[string] vars2;
+	vars2["strVal2"] = "String2";
+	vars["strVal"] = "String";
+	vars["intVal"] = 23;
+	vars["varsVal"] = vars2;
+	auto a = variant_accessor(vars);
+	assert(a.opDispatch!"strVal" == "String");
+	assert(a.strVal == "String");
+	assert(a.intVal == 23);
+	assert(a.varsVal.get!(variant_accessor).strVal2 == "String2");
+	//assert(a.varsVal.strVal2 == "String2");
 }
