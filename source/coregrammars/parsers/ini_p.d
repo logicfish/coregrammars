@@ -3,11 +3,12 @@ module coregrammars.parsers.ini_p;
 private import std.algorithm : filter,map,sort,uniq;
 private import std.array : array;
 private import std.meta : aliasSeqOf;
-private import std.typecons : tuple;
+private import std.typecons : tuple, isTuple;
 
 private import coregrammars.grammars;
-private import coregrammars.gen.ini;
-private import coregrammars.parsers.expr_p;
+
+public import coregrammars.gen.ini;
+public import coregrammars.parsers.expr_p;
 
 template ini_parse_node_list(T...) {
 	static if(T.length == 0) {
@@ -173,7 +174,7 @@ private import std.range : empty, front, popFront;
 /++
 	T is an input range of ParseTree elements
 ++/
-void parse_node_list(T)(ref Variant[string] val,T nodes) {
+private void parse_node_list(T)(ref Variant[string] val,T nodes) {
 	if(nodes.empty) {
 		return;
 	} else {
@@ -237,23 +238,6 @@ unittest {
 	assert(vals["TestSect"]["A"]["testKeyA2"] == "test value B ***");
 }
 
-private import std.typecons;
-
-void set_fields(R)(ref R res,Variant[string] values) 
-	if(isTuple!R)
-{
-	static foreach(field;R.fieldNames) {
-		if(field in values) {
-			alias f = mixin("res."~field);
-			static if(isTuple!(typeof(f))) {
-				set_fields!(typeof(f))(mixin("res."~field),values[field].get!(Variant[string]));
-			} else {
-				mixin("res."~field~" = values[\""~field~"\"].get!(typeof(res."~field~"));");
-			}
-		}
-	}
-}
-
 unittest {
 	enum Nodes = INIGrammar(import("tests/testB.ini"));
 	auto nodesTuple = parse_node!Nodes;
@@ -261,6 +245,8 @@ unittest {
 }
 
 unittest {
+	import coregrammars.parse;
+
 	enum Nodes = INIGrammar(import("tests/test.ini"));
 	auto nodesTuple = parse_node!Nodes;
 
@@ -269,8 +255,26 @@ unittest {
 	auto nodes = INIGrammar(txt);
 	Variant[string] vals;
 	parse_node(vals,nodes);
-	set_fields!(typeof(nodesTuple))(nodesTuple,vals);
+	tuple_set_fields(nodesTuple,vals);
 
 	assert(nodesTuple.TestSect.A.testKeyA2 == "test value B ***");
 
 }
+
+unittest {
+	import coregrammars.parse;
+	enum Nodes = INIGrammar(import("tests/test.ini"));
+	auto nodesTuple = parse_node!Nodes;
+
+	import std.file : readText;
+	auto txt = readText("./resources/tests/testB.ini");
+	auto nodes = INIGrammar(txt);
+	Variant[string] vals;
+	parse_node(vals,nodes);
+	tuple_set_fields(nodesTuple,vals);
+
+	assert(nodesTuple.TestSect.A.testKeyA2 == "test value B ***");
+	assert(get_named_value!string(nodesTuple,["TestSect","A","testKeyA2"])=="test value B ***");
+
+}
+
