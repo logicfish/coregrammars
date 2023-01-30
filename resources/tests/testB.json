@@ -1,0 +1,11 @@
+{
+    "Number": 44,
+    "Decimal": 123.456,
+    "String": "ABCabc",
+    "Escape": "\uAAAA\n\\Hello",
+    "Array" : [0,1,3],
+    "Array2": [0, [0,1,2], "abc"],
+    "Obj"   : { "Member":0, "Member2":[0,1,2] },
+    "True"  : true,
+    "False" : false
+}

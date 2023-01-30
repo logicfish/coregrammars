@@ -7,12 +7,23 @@ private import std.typecons : tuple;
 private import std.conv : to;
 
 private import coregrammars.grammars;
-private import coregrammars.gen.json;
 private import coregrammars.parsers.expr_p;
+version(COREGRAMMARS_MODGEN) {
+	//...
+} else {
+    private import coregrammars.gen.json;
+}
+mixin template json_parser(string text) {
+	enum Nodes = JSONGrammar(text);
+	alias Parsed = coregrammars.parsers.json_p.parse_node!Nodes;
+}
+mixin template json_parse_file(string fname) {
+	mixin coregrammars.parsers.json_p.json_parser!(import(fname));
+}
 
 template json_parse_node_list(T...) {
 	static if(T.length == 0) {
-		enum json_parse_node_list = tuple();
+		alias json_parse_node_list = tuple;
 	} else static if(T.length == 1) {
 		alias json_parse_node_list = parse_node!(T[0]);
 	} else {
@@ -22,7 +33,7 @@ template json_parse_node_list(T...) {
 
 template json_parse_node_array(T...) {
 	static if(T.length == 0) {
-		enum json_parse_node_array = tuple();
+		alias json_parse_node_array = tuple;
 	} else static if(T.length == 1) {
 		enum json_parse_node_array = tuple(parse_node!(T[0]));
 	} else {

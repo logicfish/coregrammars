@@ -1,28 +1,72 @@
 module coregrammars.parse;
 
 private import std.typecons;
-private import std.traits : isAssignable;
 private import std.variant : Variant;
+private import std.array : array,empty;
+private import std.range : only;
+private import std.exception : enforce;
+
+private import std.logger;
 
 /++
 	Sets fields in a tuple from key/value pairs in a Variant[string] array.
 	Nesting is supported, both in the output tuple fields and in the input array.
 ++/
 void tuple_set_fields(R)(ref R res,const Variant[string] values) 
-	if(isTuple!R)
-{
-	static foreach(field;R.fieldNames) {
-		if(field in values) {
-			alias f = mixin("res."~field);
-			static if(isTuple!(typeof(f))) {
-				tuple_set_fields!(typeof(f))(mixin("res."~field),values[field].get!(Variant[string]));
+	if(
+		isTuple!R 
+		&& R.Types.length > 0
+		&& R.fieldNames[0] != ""
+	) {
+	static foreach(i; 0..R.Types.length) {
+		if(R.fieldNames[i] in values) {
+			alias field = R.fieldNames[i];
+			alias F = typeof(res.field[i]);
+			static if(isTuple!F) {
+				static if(F.Types.length == 0) {
+					return;
+				} else {
+					static if(F.fieldNames[0] == "") {
+						tuple_set_fields!(F)(res.field[i],values[field].get!(Variant[]));
+					} else {
+						tuple_set_fields!(F)(res.field[i],values[field].get!(Variant[string]));
+					}
+				}
+			} else static if (!is(F == typeof(null))) {
+				if(values[field].convertsTo!(R.Types[i])) {
+					res.field[i] = values[field].get!(R.Types[i]);
+				} else {					
+					//res.field[i] = null;
+					import std.conv : to;
+					warning("Cannot convert field " ~ field ~ " to " ~ typeid(R.Types[i]).to!string);
+				}
 			} else {
-				mixin("res."~field~" = values[\""~field~"\"].get!(typeof(res."~field~"));");
+				//res.field[i] = null;
 			}
 		}
 	}
 }
-
+void tuple_set_fields(R)(ref R res,const Variant[] values) 
+	if(
+		isTuple!R 
+		&& R.Types.length > 0
+		&& R.fieldNames[0] == ""
+	) {
+	assert(R.Types.length == values.length);
+	static foreach(i; 0..R.Types.length) {
+		static if(isTuple!(R.Types[i])) {
+			static if(R.Types[i].Types.length > 0) {
+				static if(R.Types[i].fieldNames[0] == "") {
+					tuple_set_fields(res.field[i],values[i].get!(Variant[]));
+				} else {
+					tuple_set_fields(res.field[i],values[i].get!(Variant[string]));
+				}
+			}
+		} else {
+			res.field[i] = values[i].get!(R.Types[i]);
+		}
+	}
+}
 unittest {
 	auto _tuple = tuple!(string,"strVal",int,"intVal")("String",23);
 
@@ -35,27 +79,64 @@ unittest {
 
 }
 
+private import std.meta : staticIndexOf;
+
+void tuple_set_fields(R,V)(ref R res,const V v) 
+	if(
+		isTuple!R 
+		&& R.Types.length > 0
+		&& R.fieldNames[0] != ""
+		&& isTuple!V
+	) {
+	static foreach(i; 0..R.Types.length) {
+		static if(staticIndexOf!(R.fieldNames[i],V.fieldNames)!=-1) {
+			static if(isTuple!(R.Types[i])) {
+				tuple_set_fields(res.field[i],v.field[staticIndexOf!(R.fieldNames[i],V.fieldNames)]);
+			} else {
+				res.field[i] = v.field[staticIndexOf!(R.fieldNames[i],V.fieldNames)];
+			}
+		}
+	}
+}
+
+unittest {
+	auto _tuple = tuple!(string,"strVal",int,"intVal")("String",23);
+
+	auto vals = tuple!(int,"intVal")(24);
+	tuple_set_fields(_tuple,vals);
+
+	assert(_tuple.strVal == "String");
+	assert(_tuple.intVal == 24);
+
+}
 
 /++
 Fetch a value or nested vaue from a tuple using identifiers using the string array to form a
 qualified name.
 ++/
-R get_named_value(R,T)(T t,const string[] id) 
+@safe @nogc
+R get_named_value(R,string[] id,T)(const T t) 
 		if(isTuple!T) {
-	static foreach(n;T.fieldNames) {
-		if(n == id[0]) {
-			alias r = typeof(mixin("t." ~ n));
-			static if(isTuple!r) {
-				assert(id.length > 1);
-				return get_named_value!(R,r)(mixin("t."~n),id[1..$]);
-			} else static if(isAssignable!(R,r)) {
-				return mixin("t."~n);
+	static foreach(i;0..typeof(t).Types.length) {
+		static if(typeof(t).fieldNames[i] == id[0]) {
+			{
+				alias type = typeof(t).Types[i];
+
+				static if(isTuple!type) {
+					static if (id.length > 1) {
+						return get_named_value!(R,id[1..$],type)(t.field[i]);
+					} else static if( is(type : R) ) {
+						return t.field[i];
+					}
+				} else static if( is(typeof(t).Types[i] : R) ) {
+					return t.field[i];
+				}
 			}
 		}
 	}
-	assert(0);
+	assert(0,"Could not process field "~id[0]);
+	//enforce(0);
 }
-
 
 unittest {
 	auto _tuple = tuple!(string,"strVal",int,"intVal")("String",23);
@@ -67,14 +148,14 @@ unittest {
 	assert(_tuple.strVal == "String");
 	assert(_tuple.intVal == 24);
 
-	assert(get_named_value!string(_tuple,["strVal"])=="String");
-	assert(get_named_value!int(_tuple,["intVal"])==24);
+	assert(get_named_value!(string,["strVal"])(_tuple)=="String");
+	assert(get_named_value!(int,["intVal"])(_tuple)==24);
 
 }
 
 /++
 Wrap a tuple in a type that can access fields using [string].
-++/
+++ /
 struct tuple_accessor(T) {
 	T t;
 	alias t this;
@@ -115,10 +196,11 @@ unittest {
 	assert(a["tupleVal"].get!(tuple_accessor!(Tuple!(double,"doubleVal",string,"strVal2")))["strVal2"] == "String2");
 	//assert(a["tupleVal"]["strVal2"] == "String2");
 }
+++/
 
 /++
 Wrap a Variant[string] array in a type that can access fields using member names.
-++/
+++ /
 struct variant_accessor {
 	Variant[string] vars;
 	alias vars this;
@@ -151,3 +233,4 @@ unittest {
 	assert(a.varsVal.get!(variant_accessor).strVal2 == "String2");
 	//assert(a.varsVal.strVal2 == "String2");
 }
+++/
