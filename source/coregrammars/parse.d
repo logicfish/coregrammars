@@ -93,7 +93,15 @@ void tuple_set_fields(R,V)(ref R res,const V v)
 			static if(isTuple!(R.Types[i])) {
 				tuple_set_fields(res.field[i],v.field[staticIndexOf!(R.fieldNames[i],V.fieldNames)]);
 			} else {
-				res.field[i] = v.field[staticIndexOf!(R.fieldNames[i],V.fieldNames)];
+				{
+					alias srcType = typeof(v.field[staticIndexOf!(R.fieldNames[i],V.fieldNames)]);
+					alias destType = typeof(res.field[i]);
+					static if(is(destType : srcType)) {
+						res.field[i] = v.field[staticIndexOf!(R.fieldNames[i],V.fieldNames)];
+					} else {
+						pragma(msg,"Incompatible tuples: expected "~ destType ~ " for " ~ R.fieldNames[i]);
+					}
+				}
 			}
 		}
 	}
@@ -134,8 +142,9 @@ R get_named_value(R,string[] id,T)(const T t)
 			}
 		}
 	}
+	//error("Could not process field "~id[0]);
+	//return R.init;
 	assert(0,"Could not process field "~id[0]);
-	//enforce(0);
 }
 
 unittest {

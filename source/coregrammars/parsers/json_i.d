@@ -9,7 +9,7 @@ private import pegged.grammar;
 
 private import coregrammars.grammars;
 
-public import coregrammars.parsers.expr_i;
+public import coregrammars.parsers.term_i;
 
 version(COREGRAMMARS_MODGEN) {
 } else {

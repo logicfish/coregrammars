@@ -7,11 +7,11 @@ private import std.typecons : tuple, isTuple;
 
 private import coregrammars.grammars;
 
-public import coregrammars.parsers.expr_p;
+public import coregrammars.parsers.term_p;
 
 version(COREGRAMMARS_MODGEN) {
 } else {
-	private import coregrammars.gen.ini;
+	public import coregrammars.gen.ini;
 }
 
 mixin template ini_parser(string text) {

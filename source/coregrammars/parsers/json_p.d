@@ -7,7 +7,7 @@ private import std.typecons : tuple;
 private import std.conv : to;
 
 private import coregrammars.grammars;
-private import coregrammars.parsers.expr_p;
+private import coregrammars.parsers.term_p;
 version(COREGRAMMARS_MODGEN) {
 	//...
 } else {
@@ -86,7 +86,7 @@ template parse_node(alias T)
     ) {
         alias parse_node = parse_node!(T.children[0]);
     } else {
-        alias parse_node = coregrammars.parsers.expr_p.terminal_value!(T.children[0]);
+        alias parse_node = coregrammars.parsers.term_p.terminal_value!(T.children[0]);
     }
 }
 

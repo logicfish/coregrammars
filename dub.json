@@ -2,22 +2,33 @@
 	"authors": [
 		"Mark Fisher"
 	],
-	"copyright": "Copyright © 2022, Mark Fisher",
 	"configurations": [
 		{
 			"name": "default",
-			"stringImportPaths": [ "resources/" ],
+			"stringImportPaths": [
+				"resources/"
+			],
 			"targetType": "library"
 		},
 		{
+			"excludedSourceFiles": [
+				"source/coregrammars/parsers/ini_i.d",
+				"source/coregrammars/parsers/json_i.d"
+			],
 			"name": "modgen",
+			"stringImportPaths": [
+				"resources/"
+			],
 			"targetType": "executable",
-			"stringImportPaths": [ "resources/" ],
-			"versions": [ "COREGRAMMARS_MODGEN" ]
+			"versions": [
+				"COREGRAMMARS_MODGEN"
+			]
 		}
 	],
+	"copyright": "Copyright © 2022, Mark Fisher",
 	"dependencies": {
-		"pegged": "~master"
+		"pegged": "~master",
+		"yyd": "~>0.1.1"
 	},
 	"description": "Grammars containing core language features, for creating DSLs and embedded languages",
 	"license": "Apache License 2.0",

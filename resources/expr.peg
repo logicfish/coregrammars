@@ -6,5 +6,5 @@ ExpressionsGrammar(Variable = identifier):
         Factor   < Primary (Mul / Div)*
         Mul      < "*" Primary
         Div      < "/" Primary
-        Primary  < Parens / Terminals.Number / Variable
+        Primary  < Parens / Terminals.Number / ^Variable
         Parens   < :"(" Arithmetic :")"

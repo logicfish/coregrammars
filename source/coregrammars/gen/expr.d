@@ -9,7 +9,7 @@ ExpressionsGrammar(Variable = identifier):
         Factor   < Primary (Mul / Div)*
         Mul      < "*" Primary
         Div      < "/" Primary
-        Primary  < Parens / Terminals.Number / Variable
+        Primary  < Parens / Terminals.Number / ^Variable
         Parens   < :"(" Arithmetic :")"
 
 
@@ -327,7 +327,7 @@ import std.functional: toDelegate;
     {
         if(__ctfe)
         {
-            return         pegged.peg.defined!(pegged.peg.or!(pegged.peg.wrapAround!(Spacing, Parens, Spacing), pegged.peg.wrapAround!(Spacing, Terminals.Number, Spacing), pegged.peg.wrapAround!(Spacing, Variable, Spacing)), "ExpressionsGrammar.Primary")(p);
+            return         pegged.peg.defined!(pegged.peg.or!(pegged.peg.wrapAround!(Spacing, Parens, Spacing), pegged.peg.wrapAround!(Spacing, Terminals.Number, Spacing), pegged.peg.keep!(pegged.peg.wrapAround!(Spacing, Variable, Spacing))), "ExpressionsGrammar.Primary")(p);
         }
         else
         {
@@ -335,7 +335,7 @@ import std.functional: toDelegate;
                 return *m;
             else
             {
-                TParseTree result = hooked!(pegged.peg.defined!(pegged.peg.or!(pegged.peg.wrapAround!(Spacing, Parens, Spacing), pegged.peg.wrapAround!(Spacing, Terminals.Number, Spacing), pegged.peg.wrapAround!(Spacing, Variable, Spacing)), "ExpressionsGrammar.Primary"), "Primary")(p);
+                TParseTree result = hooked!(pegged.peg.defined!(pegged.peg.or!(pegged.peg.wrapAround!(Spacing, Parens, Spacing), pegged.peg.wrapAround!(Spacing, Terminals.Number, Spacing), pegged.peg.keep!(pegged.peg.wrapAround!(Spacing, Variable, Spacing))), "ExpressionsGrammar.Primary"), "Primary")(p);
                 memo[tuple(`Primary`, p.end)] = result;
                 return result;
             }
@@ -346,12 +346,12 @@ import std.functional: toDelegate;
     {
         if(__ctfe)
         {
-            return         pegged.peg.defined!(pegged.peg.or!(pegged.peg.wrapAround!(Spacing, Parens, Spacing), pegged.peg.wrapAround!(Spacing, Terminals.Number, Spacing), pegged.peg.wrapAround!(Spacing, Variable, Spacing)), "ExpressionsGrammar.Primary")(TParseTree("", false,[], s));
+            return         pegged.peg.defined!(pegged.peg.or!(pegged.peg.wrapAround!(Spacing, Parens, Spacing), pegged.peg.wrapAround!(Spacing, Terminals.Number, Spacing), pegged.peg.keep!(pegged.peg.wrapAround!(Spacing, Variable, Spacing))), "ExpressionsGrammar.Primary")(TParseTree("", false,[], s));
         }
         else
         {
             forgetMemo();
-            return hooked!(pegged.peg.defined!(pegged.peg.or!(pegged.peg.wrapAround!(Spacing, Parens, Spacing), pegged.peg.wrapAround!(Spacing, Terminals.Number, Spacing), pegged.peg.wrapAround!(Spacing, Variable, Spacing)), "ExpressionsGrammar.Primary"), "Primary")(TParseTree("", false,[], s));
+            return hooked!(pegged.peg.defined!(pegged.peg.or!(pegged.peg.wrapAround!(Spacing, Parens, Spacing), pegged.peg.wrapAround!(Spacing, Terminals.Number, Spacing), pegged.peg.keep!(pegged.peg.wrapAround!(Spacing, Variable, Spacing))), "ExpressionsGrammar.Primary"), "Primary")(TParseTree("", false,[], s));
         }
     }
     static string Primary(GetName g)

@@ -7,12 +7,13 @@ private import std.algorithm : filter,map,sort,uniq;
 
 private import pegged.grammar;
 
-public import coregrammars.grammars;
+private import coregrammars.grammars;
+private import coregrammars.parsers.ini_p;
 
-public import coregrammars.parsers.expr_i;
+public import coregrammars.parsers.term_i;
 
 version(COREGRAMMARS_MODGEN) {
-	//...
+	//
 } else {
 	private import coregrammars.gen.ini;
 }
