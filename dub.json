@@ -28,7 +28,7 @@
 	"copyright": "Copyright © 2022, Mark Fisher",
 	"dependencies": {
 		"pegged": "~master",
-		"yyd": "~>0.1.1"
+		"yyd": "~>0.2.0"
 	},
 	"description": "Grammars containing core language features, for creating DSLs and embedded languages",
 	"license": "Apache License 2.0",

@@ -1,7 +1,8 @@
 module coregrammars.parsers.ini_i;
 
 private import std.variant : Variant;
-private import std.logger : log, warning;
+private import std.exception : enforce;
+private import std.logger : log, warning, info;
 private import std.range : empty, front, popFront;
 private import std.algorithm : filter,map,sort,uniq;
 
@@ -21,7 +22,7 @@ version(COREGRAMMARS_MODGEN) {
 Variant[string] ini_interp(string text) {
 	auto nodes = INIGrammar(text);
 	Variant[string] vals;
-	parse_node(vals,nodes);
+	interp_node(vals,nodes);
 	return vals;
 }
 
@@ -34,27 +35,28 @@ Variant[string] ini_interp_file(string fname) {
 /++
 	T is an input range of ParseTree elements
 ++/
-private void parse_node_list(T)(ref Variant[string] val,T nodes) {
+private void interp_node_list(T)(ref Variant[string] val,T nodes) {
 	if(nodes.empty) {
 		return;
 	} else {
-		parse_node(val,nodes.front);
+		interp_node(val,nodes.front);
 		nodes.popFront;
-		parse_node_list(val,nodes);
+		interp_node_list(val,nodes);
 	}
 }
 
-void parse_node(ref Variant[string] val,ParseTree n) {
+void interp_node(ref Variant[string] val,ParseTree n) {
 	switch(n.name) {
 		case "INIGrammar":
-			parse_node(val,n.children[0]);
+			enforce(n.children.length == 1);
+			interp_node(val,n.children[0]);
 			break;
 		case "INIGrammar.INI":
-			parse_node_list(val,n.children);
+			interp_node_list(val,n.children);
 			break;
 		case "INIGrammar.Section":
 			Variant[string] var;
-			parse_node_list(var,n.children.filter!(e=>e.name=="INIGrammar.Decl"));
+			interp_node_list(var,n.children.filter!(e=>e.name=="INIGrammar.Decl"));
 			if(n.children[0].matches.length == 1) {
 				auto id = n.children[0].matches[0];
 				val[id] = var;
@@ -71,6 +73,8 @@ void parse_node(ref Variant[string] val,ParseTree n) {
 			}
 			break;
 		case "INIGrammar.Decl":
+			enforce(n.children.length == 1);
+			enforce(n.matches.length > 0);
 			val[n.matches[0]] = terminal_value(n.children[0]);
 			break;
 		default:
@@ -81,20 +85,15 @@ void parse_node(ref Variant[string] val,ParseTree n) {
 unittest {
 	import std.file : readText;
 	auto txt = readText("./resources/tests/test.ini");
-	//auto nodes = INIGrammar(txt);
-	Variant[string] vals = ini_interp(txt);
-	//parse_node(vals,nodes);
 
+	Variant[string] vals = ini_interp(txt);
 	assert(vals["TestSect"]["A"]["testKeyA2"] == "test value B");
 }
 
 unittest {
 	import std.file : readText;
 	auto txt = readText("./resources/tests/testB.ini");
-//	auto nodes = INIGrammar(txt);
-//	Variant[string] vals;
 	Variant[string] vals = ini_interp(txt);
-	//parse_node(vals,nodes);
 
 	assert(vals["TestSect"]["A"]["testKeyA2"] == "test value B ***");
 }
@@ -111,16 +110,12 @@ unittest {
 	import coregrammars.parse;
     static import coregrammars.parsers.ini_p;
 
-	//enum Nodes = INIGrammar(import("tests/test.ini"));
-	//auto nodesTuple = coregrammars.parsers.ini_p.parse_node!Nodes;
 	mixin coregrammars.parsers.ini_p.ini_parser!(import("tests/test.ini")) _p;
 	auto nodesTuple = _p.Parsed;
 
 	import std.file : readText;
 	auto txt = readText("./resources/tests/testB.ini");
-	//auto nodes = INIGrammar(txt);
-	//Variant[string] vals;
-	//parse_node(vals,nodes);
+
 	Variant[string] vals = ini_interp(txt);
 
 	tuple_set_fields(nodesTuple,vals);
@@ -132,16 +127,12 @@ unittest {
 	import coregrammars.parse;
     import coregrammars.parsers.ini_p;
 
-	//enum Nodes = INIGrammar(import("tests/test.ini"));
-	//auto nodesTuple = coregrammars.parsers.ini_p.parse_node!Nodes;
 	mixin ini_parser!(import("tests/test.ini")) _p;
 	auto nodesTuple = _p.Parsed;
 
 	import std.file : readText;
 	auto txt = readText("./resources/tests/testB.ini");
-	//auto nodes = INIGrammar(txt);	
-	//Variant[string] vals;
-	//parse_node(vals,nodes);
+
 	Variant[string] vals = ini_interp(txt);
 	tuple_set_fields(nodesTuple,vals);
 
