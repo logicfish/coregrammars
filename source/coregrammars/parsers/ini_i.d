@@ -19,17 +19,27 @@ version(COREGRAMMARS_MODGEN) {
 	private import coregrammars.gen.ini;
 }
 
-Variant[string] ini_interp(string text) {
+ref Variant[string] ini_interp(string text,ref Variant[string] vals) {
 	auto nodes = INIGrammar(text);
-	Variant[string] vals;
+	//Variant[string] vals;
 	interp_node(vals,nodes);
 	return vals;
 }
 
-Variant[string] ini_interp_file(string fname) {
+ref Variant[string] ini_interp_file(string fname,ref Variant[string] vals) {
 	import std.file : readText;
 	auto txt = readText(fname);
-	return ini_interp(txt);
+	return ini_interp(txt,vals);
+}
+
+ref Variant[string] ini_interp(string text) {
+	Variant[string] vals;
+	return ini_interp(text,vals);
+}
+
+ref Variant[string] ini_interp_file(string fname) {
+	Variant[string] vals;
+	return ini_interp_file(fname,vals);
 }
 
 /++
