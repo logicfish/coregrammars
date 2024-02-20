@@ -1,16 +1,16 @@
 /+ DO NOT EDIT BY HAND!
 This module was automatically generated from the following grammar:
 
-ExpressionsGrammar(Variable = identifier):
-
-        Arithmetic     < Factor (Add / Sub)*
-        Add      < "+" Factor
-        Sub      < "-" Factor
-        Factor   < Primary (Mul / Div)*
-        Mul      < "*" Primary
-        Div      < "/" Primary
-        Primary  < Parens / Terminals.Number / ^Variable
-        Parens   < :"(" Arithmetic :")"
+ExpressionsGrammar(Variable = identifier):
+
+        Arithmetic     < Factor (Add / Sub)*
+        Add      < "+" Factor
+        Sub      < "-" Factor
+        Factor   < Primary (Mul / Div)*
+        Mul      < "*" Primary
+        Div      < "/" Primary
+        Primary  < Parens / Terminals.Number / ^Variable
+        Parens   < :"(" Arithmetic :")"
 
 
 +/

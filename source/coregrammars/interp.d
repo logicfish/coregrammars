@@ -68,24 +68,11 @@ Variant[string] tuple_vararray(alias t)()
 		{
 			alias type = typeof(t).Types[i];
 			enum name = typeof(t).fieldNames[i];
-			alias field = t.field[i];
 			static if (name != "") {
 				static if(isTuple!type) {
-					//pragma(msg,typeid(type));
-					// BROKEN
-					//auto _ar = tuple_vararray!(t.field[i])();
-					//ar[name] = Variant(_ar);
-					//ar[name] = Variant();
-					static if(typeof(t).Types.length > 0) {
-						static if(typeof(t).fieldNames[0] == "") {
-							Variant[] v = tuple_vararray!(t.field[i])();
-							ar[name] = Variant(v);
-						} else {
-							// BROKEN
-							//Variant[string] _v = tuple_vararray!(t.field[i])();
-							//ar[name] = Variant(_v);
-						}
-					}
+					auto f = t.field[i];
+					auto _ar = tuple_vararray!(f)();
+					ar[name] = Variant(_ar);
 				} else {
 					ar[name] = Variant(t.field[i]);
 				}
@@ -109,25 +96,14 @@ Variant[] tuple_vararray(alias t)()
 			 && typeof(t).fieldNames.length > 0 
 			 && typeof(t).fieldNames[0] == "" 
 		) {
-	//pragma(msg,"Var[]");
     Variant[] ar;
 	static foreach(i; 0 .. typeof(t).Types.length) {
 		{
-			if(isTuple!(typeof(t).Types[i])) {
-				static if(typeof(t).Types.length > 0) {
-					static if(typeof(t).fieldNames[0] == "") {
-						// BROKEN
-						//Variant[] va = tuple_vararray!(t.field[i])();
-						//ar ~= Variant(va);
-					} else {
-						Variant[string] _va = tuple_vararray!(t.field[i])();
-						ar ~= Variant(_va);
-					}
-				}
-				// BROKEN
-				//auto a = Variant(tuple_vararray!(t.field[i])());
-				//auto a = Variant();
-				//ar ~= a;
+			alias tu = typeof(t).Types[i];
+			static if(isTuple!(tu)) {
+				auto f = t.field[i];
+				auto va = tuple_vararray!f();
+				ar ~= Variant(va);
 			} else {
 				ar ~= Variant(t.field[i]);
 			}
@@ -158,12 +134,12 @@ unittest {
 	Variant[string] vals = tuple_vararray!_tuple;
 	assert(vals["strVal"]=="String");
 	assert(vals["intVal"]==23);
-/*	BROKEN
+
     auto _ar = vals["arrayVal"].get!(Variant[]);
 	assert(_ar !is null);
 	assert(_ar.length == 3);
 	assert(_ar[0] == 10);
 	assert(_ar[1] == 11);
-	assert(_ar[2] == "String2");*/
+	assert(_ar[2] == "String2");
 }
 

@@ -1,39 +1,39 @@
 /+ DO NOT EDIT BY HAND!
 This module was automatically generated from the following grammar:
 
-Terminals:
-
-Literal < ^String / ^Number / Boolean / ^Null
-
-String <~ :doublequote Char* :doublequote
-
-Char   <~ backslash doublequote
-          / backslash backslash
-          / backslash [bfnrt]
-          / backslash 'x' Hex Hex
-          / backslash 'u' Hex Hex Hex Hex
-          / backslash 'U' Hex Hex Hex Hex Hex Hex Hex Hex
-          / (!doublequote .)
-
-Hex    <- [0-9A-Fa-f]
-
-
-Number <~ Scientific / Floating / Integer / Hexa / Binary
-
-Scientific <~ Floating ( ('e' / 'E' ) Integer )?
-Floating   <~ Integer ('.' Unsigned )?
-Unsigned   <~ [0-9]+
-Integer    <~ Sign? Unsigned
-Hexa       <~ :"0x"[0-9a-fA-F]+
-Binary     <~ :"0b" [01] [01_]*
-Sign       <- '-' / '+'
-
-Boolean <- ^True / ^False
-
-True   <- "true"
-False  <- "false"
-
-Null   <- "null"
+Terminals:
+
+Literal < ^String / ^Number / Boolean / ^Null
+
+String <~ :doublequote Char* :doublequote
+
+Char   <~ backslash doublequote
+          / backslash backslash
+          / backslash [bfnrt]
+          / backslash 'x' Hex Hex
+          / backslash 'u' Hex Hex Hex Hex
+          / backslash 'U' Hex Hex Hex Hex Hex Hex Hex Hex
+          / (!doublequote .)
+
+Hex    <- [0-9A-Fa-f]
+
+
+Number <~ Scientific / Floating / Integer / Hexa / Binary
+
+Scientific <~ Floating ( ('e' / 'E' ) Integer )?
+Floating   <~ Integer ('.' Unsigned )?
+Unsigned   <~ [0-9]+
+Integer    <~ Sign? Unsigned
+Hexa       <~ :"0x"[0-9a-fA-F]+
+Binary     <~ :"0b" [01] [01_]*
+Sign       <- '-' / '+'
+
+Boolean <- ^True / ^False
+
+True   <- "true"
+False  <- "false"
+
+Null   <- "null"
 
 
 +/

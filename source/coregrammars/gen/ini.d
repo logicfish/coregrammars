@@ -1,16 +1,16 @@
 /+ DO NOT EDIT BY HAND!
 This module was automatically generated from the following grammar:
 
-INIGrammar:
-  INI < (Section / Comment)* :eoi
-
-  Comment <~ :"#" (!eol .)* (:eol/:eoi)
-
-  Section < Header :Comment? (Decl :Comment? / :Comment)*
-
-  Header < :"[" identifier (:"." identifier)? :"]"
-
-  Decl < identifier :"=" Terminals.Literal
+INIGrammar:
+  INI < (Section / Comment)* :eoi
+
+  Comment <~ :"#" (!eol .)* (:eol/:eoi)
+
+  Section < Header :Comment? (Decl :Comment? / :Comment)*
+
+  Header < :"[" identifier (:"." identifier)? :"]"
+
+  Decl < identifier :"=" Terminals.Literal
 
 
 +/

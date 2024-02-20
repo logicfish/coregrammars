@@ -75,7 +75,7 @@ template parse_node(alias T)
 }
 
 template parse_node(alias T) 
-    if(T.name == "JSONGrammar.Value")
+    if(T.name == "JSONGrammar.Value" && T.children.length == 1)
 {
     static if(
         T.children[0].name == "JSONGrammar.JSONObject" 
@@ -94,7 +94,6 @@ template parse_node(alias T)
     if(T.name == "JSONGrammar.Array")
 {
     alias parse_node = json_parse_node_array!(aliasSeqOf!(T.children));
-    //static immutable terminal_value = [];
 }
 
 template terminal_value(alias T) 

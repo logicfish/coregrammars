@@ -1,11 +1,11 @@
 /+ DO NOT EDIT BY HAND!
 This module was automatically generated from the following grammar:
 
-JSONGrammar:
-    JSONObject <  :'{' (Pair (:',' Pair)*)? :'}'
-    Pair       <  ^Terminals.String :':' Value
-    Array      <  :'[' (Value (:',' Value)* )? :']'
-    Value      < Terminals.Literal / JSONObject / Array
+JSONGrammar:
+    JSONObject <  :'{' (Pair (:',' Pair)*)? :'}'
+    Pair       <  ^Terminals.String :':' Value
+    Array      <  :'[' (Value (:',' Value)* )? :']'
+    Value      < Terminals.Literal / JSONObject / Array
 
 
 +/

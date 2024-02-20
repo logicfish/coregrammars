@@ -24,8 +24,6 @@ mixin template ini_parse_file(string fname) {
 template ini_parse_node_list(T...) {
 	static if(T.length == 0) {
 		alias ini_parse_node_list = tuple;
-	} else static if(T.length == 1) {
-		alias ini_parse_node_list = parse_node!(T[0]);
 	} else {
 		enum ini_parse_node_list = parse_node!(T[0]) ~ ini_parse_node_list!(T[1..$]);
 	}
@@ -90,6 +88,8 @@ template ini_list_section_names(alias T)
 	enum ini_list_section_names = NoDuplicates!(staticSort!(Comp,aliasSeqOf!(
 		T.children.filter!((e)=>
 			e.name == "INIGrammar.Section"
+			&& e.children.length >= 1
+			&& e.children[0].matches.length >= 1
 		).map!((e)=>
 			e.children[0].matches[0]
 		))));

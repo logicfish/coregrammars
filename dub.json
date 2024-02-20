@@ -27,10 +27,11 @@
 	],
 	"copyright": "Copyright © 2022, Mark Fisher",
 	"dependencies": {
-		"pegged": "~master",
+		"pegged": "~>0.4.9",
 		"yyd": "~>0.2.0"
 	},
 	"description": "Grammars containing core language features, for creating DSLs and embedded languages",
 	"license": "Apache License 2.0",
-	"name": "coregrammars"
+	"name": "coregrammars",
+	"dflags": [ "--lowmem" ]
 }
