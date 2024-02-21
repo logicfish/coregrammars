@@ -21,7 +21,6 @@ version(COREGRAMMARS_MODGEN) {
 
 ref Variant[string] ini_interp(string text,ref Variant[string] vals) {
 	auto nodes = INIGrammar(text);
-	//Variant[string] vals;
 	interp_node(vals,nodes);
 	return vals;
 }
@@ -131,6 +130,7 @@ unittest {
 	tuple_set_fields(nodesTuple,vals);
 	assert(nodesTuple.TestSect.A.testKeyA2 == "test value B ***");
 
+	assert(vals["TestSect"]["A"]["testKeyA2"] == "test value B ***");
 }
 
 unittest {
@@ -149,5 +149,6 @@ unittest {
 	assert(nodesTuple.TestSect.A.testKeyA2 == "test value B ***");
 	assert(get_named_value!(string,["TestSect","A","testKeyA2"])(nodesTuple)=="test value B ***");
 
+	assert(vals["TestSect"]["A"]["testKeyA2"] == "test value B ***");
 }
 

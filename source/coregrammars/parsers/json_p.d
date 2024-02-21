@@ -8,15 +8,18 @@ private import std.conv : to;
 
 private import coregrammars.grammars;
 private import coregrammars.parsers.term_p;
+
 version(COREGRAMMARS_MODGEN) {
 	//...
 } else {
     private import coregrammars.gen.json;
 }
+
 mixin template json_parser(string text) {
 	enum Nodes = JSONGrammar(text);
 	alias Parsed = coregrammars.parsers.json_p.parse_node!Nodes;
 }
+
 mixin template json_parse_file(string fname) {
 	mixin coregrammars.parsers.json_p.json_parser!(import(fname));
 }
@@ -24,88 +27,106 @@ mixin template json_parse_file(string fname) {
 template json_parse_node_list(T...) {
 	static if(T.length == 0) {
 		alias json_parse_node_list = tuple;
-	} else static if(T.length == 1) {
-		alias json_parse_node_list = parse_node!(T[0]);
 	} else {
-		enum json_parse_node_list = parse_node!(T[0]) ~ json_parse_node_list!(T[1..$]);
+		enum json_parse_node_list = 
+			    parse_node!(T[0]) 
+			    ~ json_parse_node_list!(T[1..$]);
 	}
 }
 
 template json_parse_node_array(T...) {
 	static if(T.length == 0) {
 		alias json_parse_node_array = tuple;
-	} else static if(T.length == 1) {
-		enum json_parse_node_array = tuple(parse_node!(T[0]));
 	} else {
-		enum json_parse_node_array = tuple(parse_node!(T[0])) ~ json_parse_node_array!(T[1..$]);
+		enum json_parse_node_array = 
+			    tuple(parse_node!(T[0])) 
+			    ~ json_parse_node_array!(T[1..$]);
 	}
 }
 
 template parse_node(alias T) 
-    if(T.name == "JSONGrammar" && T.children.length == 1)
-{
+	if(
+		T.name == "JSONGrammar" 
+		&& T.children.length == 1
+	) {
     alias parse_node = parse_node!(T.children[0]);
 }
 
 template parse_node(alias T) 
-    if(T.name == "JSONGrammar.JSONObject")
-{
+	if(T.name == "JSONGrammar.JSONObject") {
     alias parse_node = json_parse_node_list!(aliasSeqOf!(T.children));
 }
 
 template parse_node(alias T) 
-        if(T.name == "JSONGrammar.Pair" 
-        && T.children.length == 2
-    )
-{
-    static if (T.children[1].matches.length == 0) {
-        enum parse_node = tuple!(T.matches[0])("");
-    } else {
-        enum parse_node = tuple!(T.matches[0])(parse_node!(T.children[1]));
-    }
+        if(
+		T.name == "JSONGrammar.Pair" 
+		&& T.children.length == 2
+		&& T.children[1].matches.length == 0
+	) {
+    enum parse_node = tuple!(T.matches[0])("");
 }
 
+template parse_node(alias T) 
+        if(
+		T.name == "JSONGrammar.Pair" 
+		&& T.children.length == 2
+		&& T.children[1].matches.length > 0
+	) {
+        enum parse_node = 
+		tuple!(T.matches[0])(parse_node!(T.children[1]));
+}
 
 template parse_node(alias T) 
-        if(T.name == "JSONGrammar.Pair" 
-        && T.children.length < 2
-    )
-{
+        if(
+		T.name == "JSONGrammar.Pair" 
+		&& T.children.length < 2
+	) {
     enum parse_node = tuple!(T.matches[0])(null);
 }
 
 template parse_node(alias T) 
-    if(T.name == "JSONGrammar.Value" && T.children.length == 1)
-{
-    static if(
-        T.children[0].name == "JSONGrammar.JSONObject" 
-    ) {
-        alias parse_node = terminal_value!(T.children[0]);
-    } else static if (
-        T.children[0].name == "JSONGrammar.Array" 
-    ) {
-        alias parse_node = parse_node!(T.children[0]);
-    } else {
-        alias parse_node = coregrammars.parsers.term_p.terminal_value!(T.children[0]);
-    }
+	if(
+		T.name == "JSONGrammar.Value" 
+		&& T.children.length == 1
+		&& T.children[0].name == "JSONGrammar.JSONObject" 
+	) {
+    alias parse_node = terminal_value!(T.children[0]);
 }
 
 template parse_node(alias T) 
-    if(T.name == "JSONGrammar.Array")
-{
-    alias parse_node = json_parse_node_array!(aliasSeqOf!(T.children));
+	if(
+		T.name == "JSONGrammar.Value" 
+		&& T.children.length == 1
+		&& T.children[0].name == "JSONGrammar.Array" 
+	) {
+    alias parse_node = parse_node!(T.children[0]);
+}
+
+template parse_node(alias T) 
+	if(
+		T.name == "JSONGrammar.Value" 
+		&& T.children.length == 1
+		&& T.children[0].name != "JSONGrammar.JSONObject" 
+		&& T.children[0].name != "JSONGrammar.Array" 
+	) {	
+    alias parse_node = 
+	    coregrammars.parsers.term_p.terminal_value!(T.children[0]);
+}
+
+
+template parse_node(alias T) 
+	if(T.name == "JSONGrammar.Array") {
+    alias parse_node = 
+	    json_parse_node_array!(aliasSeqOf!(T.children));
 }
 
 template terminal_value(alias T) 
-    if(T.name == "JSONGrammar.Array")
-{
-    alias terminal_value = json_parse_node_list!(aliasSeqOf!(T.children));
-}
-
-template terminal_value(alias T) 
-	if(T.name == "JSONGrammar.JSONObject")
-{
-	alias terminal_value = json_parse_node_list!(aliasSeqOf!(T.children));
+	if(
+		T.name == "JSONGrammar.Array"
+		|| T.name == "JSONGrammar.JSONObject"
+	) {
+    alias terminal_value = 
+	    json_parse_node_list!(aliasSeqOf!(T.children));
 }
 
 unittest {
