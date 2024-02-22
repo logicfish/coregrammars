@@ -13,11 +13,11 @@ private import std.logger;
 	Nesting is supported, both in the output tuple fields and in the input array.
 ++/
 void tuple_set_fields(R)(ref R res,const Variant[string] values) 
-	if(
-		isTuple!R 
-		&& R.Types.length > 0
-		&& R.fieldNames[0] != ""
-	) {
+		if(
+				isTuple!R 
+				&& R.Types.length > 0
+				&& R.fieldNames[0] != ""
+		) {
 	static foreach(i; 0..R.Types.length) {
 		if(R.fieldNames[i] in values) {
 			alias field = R.fieldNames[i];
@@ -47,11 +47,11 @@ void tuple_set_fields(R)(ref R res,const Variant[string] values)
 	}
 }
 void tuple_set_fields(R)(ref R res,const Variant[] values) 
-	if(
-		isTuple!R 
-		&& R.Types.length > 0
-		&& R.fieldNames[0] == ""
-	) {
+		if(
+				isTuple!R 
+				&& R.Types.length > 0
+				&& R.fieldNames[0] == ""
+		) {
 	assert(R.Types.length == values.length);
 	static foreach(i; 0..R.Types.length) {
 		static if(isTuple!(R.Types[i])) {
@@ -82,12 +82,12 @@ unittest {
 private import std.meta : staticIndexOf;
 
 void tuple_set_fields(R,V)(ref R res,const V v) 
-	if(
-		isTuple!R 
-		&& R.Types.length > 0
-		&& R.fieldNames[0] != ""
-		&& isTuple!V
-	) {
+		if(
+				isTuple!R 
+				&& R.Types.length > 0
+				&& R.fieldNames[0] != ""
+				&& isTuple!V
+		) {
 	static foreach(i; 0..R.Types.length) {
 		static if(staticIndexOf!(R.fieldNames[i],V.fieldNames)!=-1) {
 			static if(isTuple!(R.Types[i])) {
