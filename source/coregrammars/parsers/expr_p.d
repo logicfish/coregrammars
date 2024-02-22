@@ -24,16 +24,6 @@ mixin template evaluate_file(string fname,alias Var = identifier)
 	mixin coregrammars.parsers.expr_p.evaluator!(V,import(fname));
 }
 
-/*template expr_eval_node_list(alias V,T...) {
-	static if(T.length == 0) {
-		alias expr_eval_node_list = tuple;
-	} else static if(T.length == 1) {
-		alias expr_eval_node_list = eval_node!(V,T[0]);
-	} else {
-		enum expr_eval_node_list = eval_node!(V,T[0]) ~ expr_eval_node_list!(V,T[1..$]);
-	}
-}*/
-
 template eval_factors(alias V,T...) 
 {
 	static if (T.length == 0) {
@@ -67,65 +57,65 @@ template eval_primaries(alias V,T...)
 }
 
 template eval_node(alias V,alias T) 
-	if(T.name == "ExpressionsGrammar" && T.children.length == 1)
-{
-	alias eval_node = eval_node!(V,T.children[0]);
-}
-
-template eval_node(alias V,alias T) 
-	if(
-		T.name == "ExpressionsGrammar.Arithmetic" 
+if(
+		T.name == "ExpressionsGrammar" 
 		&& T.children.length == 1
-		&& T.children[0].name == "ExpressionsGrammar.Factor" 
-	) {
-	alias eval_node = eval_node!(V,T.children[0]);	
-}
-
-template eval_node(alias V,alias T) 
-	if(
-		T.name == "ExpressionsGrammar.Arithmetic" 
-		&& T.children.length > 1
-		&& T.children[0].name == "ExpressionsGrammar.Factor" 
-	) {
-	alias eval_node = eval_factors!(V,aliasSeqOf!(T.children));
-}
-
-template eval_node(alias V,alias T) 
-	if(
-		T.name == "ExpressionsGrammar.Factor" 
-		&& T.children.length > 1
-		&& T.children[0].name == "ExpressionsGrammar.Primary" 
-	) {
-	alias eval_node = eval_primaries!(V,aliasSeqOf!(T.children));
-}
-
-template eval_node(alias V,alias T) 
-	if(
-		(
-			T.name == "ExpressionsGrammar.Factor" 
-			|| T.name == "ExpressionsGrammar.Add" 
-			|| T.name == "ExpressionsGrammar.Sub" 
-			|| T.name == "ExpressionsGrammar.Mul" 
-			|| T.name == "ExpressionsGrammar.Div" 
-			|| T.name == "ExpressionsGrammar.Parens"
-			|| T.name == "ExpressionsGrammar.Primary"
-		)
-		&& T.children.length == 1
-	) {
+) {
 	alias eval_node = eval_node!(V,T.children[0]);
 }
 
 template eval_node(alias V,alias T) 
 if(
-	T.name == "ExpressionsGrammar.Primary" 
-	&&  T.children.length == 0
-	&&  T.matches.length == 1
+		T.name == "ExpressionsGrammar.Arithmetic" 
+		&& T.children.length == 1
+		&& T.children[0].name == "ExpressionsGrammar.Factor" 
+) {
+	alias eval_node = eval_node!(V,T.children[0]);	
+}
+
+template eval_node(alias V,alias T) 
+if(
+		T.name == "ExpressionsGrammar.Arithmetic" 
+		&& T.children.length > 1
+		&& T.children[0].name == "ExpressionsGrammar.Factor" 
+) {
+	alias eval_node = eval_factors!(V,aliasSeqOf!(T.children));
+}
+
+template eval_node(alias V,alias T) 
+if(
+		T.name == "ExpressionsGrammar.Factor" 
+		&& T.children.length > 1
+		&& T.children[0].name == "ExpressionsGrammar.Primary" 
+) {
+	alias eval_node = eval_primaries!(V,aliasSeqOf!(T.children));
+}
+
+template eval_node(alias V,alias T) 
+if((
+		T.name == "ExpressionsGrammar.Factor" 
+		|| T.name == "ExpressionsGrammar.Add" 
+		|| T.name == "ExpressionsGrammar.Sub" 
+		|| T.name == "ExpressionsGrammar.Mul" 
+		|| T.name == "ExpressionsGrammar.Div" 
+		|| T.name == "ExpressionsGrammar.Parens"
+		|| T.name == "ExpressionsGrammar.Primary"
+	) && T.children.length == 1
+) {
+	alias eval_node = eval_node!(V,T.children[0]);
+}
+
+template eval_node(alias V,alias T) 
+if(
+		T.name == "ExpressionsGrammar.Primary" 
+		&&  T.children.length == 0
+		&&  T.matches.length == 1
 ) {
 	enum eval_node = T.matches[0].to!double;
 }
 
 template eval_node(alias V,alias T) 
-if(T.name == "identifier") // should be V
+if(T.name == "identifier") // needs && V == identifier somehow.
 {
 	enum eval_node = mixin(T.matches[0]);
 }

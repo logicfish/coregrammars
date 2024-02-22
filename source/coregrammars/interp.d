@@ -1,11 +1,11 @@
 module coregrammars.interp;
 
-private import std.typecons;
+private import std.typecons : tuple, isTuple, Tuple;
 private import std.variant : Variant;
+private import std.sumtype : SumType;
 
 private import coregrammars.parse;
 
-private import std.sumtype : SumType;
 
 alias VarType = SumType!(double, int, string, Variant[], Variant[string]);
 
