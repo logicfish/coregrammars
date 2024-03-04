@@ -1,12 +1,14 @@
 # coregrammars
 A collection of basic grammars in D / pegged compiled as modules.
 
+Each grammar is contained in a submodule, so to include the ini grammar
+for example, add `coregrammars:ini` to your dependencies.
+
 There are also a collection of parsers that convert grammar tree 
 nodes into tuples at compile time. 
 
-These are in the package coregrammars.parsers .
-
-They can also process files at runtime into a Variant[string] reference.
+And, there are utilities that can also process files at runtime into a 
+Variant[string] reference.
 This can be used to update field values a tuple parsed at compile time.
 
 To use the grammars:
@@ -54,7 +56,7 @@ dub test -c modgen && dub run -c modgen && dub test
 To use the parsers:
 ```
     import coregrammars.gen.ini;
-    import coregrammars.parsers.ini_p;
+    import coregrammars.parsers.ini;
 
 	enum Nodes = INIGrammar(q{
 [TestSect]
@@ -93,7 +95,7 @@ testKey = "test value"
 
 ```
   import coregrammars.gen.json;
-  import coregrammars.parsers.json_p;
+  import coregrammars.parsers.json;
   alias JSON=JSONGrammar;
     enum example2 = `
     {
