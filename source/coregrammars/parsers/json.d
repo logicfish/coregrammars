@@ -1,4 +1,4 @@
-module coregrammars.parsers.json_p;
+module coregrammars.parsers.json;
 
 private import std.algorithm : filter,map,uniq;
 private import std.array : array;
@@ -6,8 +6,8 @@ private import std.meta : aliasSeqOf;
 private import std.typecons : tuple;
 private import std.conv : to;
 
-private import coregrammars.grammars;
-private import coregrammars.parsers.term_p;
+public import coregrammars.gen.json;
+public import coregrammars.parsers.terms;
 
 version(COREGRAMMARS_MODGEN) {
 	//...
@@ -17,11 +17,11 @@ version(COREGRAMMARS_MODGEN) {
 
 mixin template json_parser(string text) {
 	enum Nodes = JSONGrammar(text);
-	alias Parsed = coregrammars.parsers.json_p.parse_node!Nodes;
+	alias Parsed = coregrammars.parsers.json.parse_node!Nodes;
 }
 
 mixin template json_parse_file(string fname) {
-	mixin coregrammars.parsers.json_p.json_parser!(import(fname));
+	mixin coregrammars.parsers.json.json_parser!(import(fname));
 }
 
 template json_parse_node_list(T...) {
@@ -110,7 +110,7 @@ template parse_node(alias T)
 		&& T.children[0].name != "JSONGrammar.Array" 
 	) {	
     alias parse_node = 
-	    coregrammars.parsers.term_p.terminal_value!(T.children[0]);
+	    coregrammars.parsers.terms.terminal_value!(T.children[0]);
 }
 
 

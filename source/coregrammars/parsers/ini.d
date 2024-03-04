@@ -1,13 +1,12 @@
-module coregrammars.parsers.ini_p;
+module coregrammars.parsers.ini;
 
 private import std.algorithm : filter,map,sort,uniq;
 private import std.array : array;
 private import std.meta : aliasSeqOf, NoDuplicates, staticSort;
 private import std.typecons : tuple, isTuple;
 
-private import coregrammars.grammars;
-
-public import coregrammars.parsers.term_p;
+public import coregrammars.gen.ini;
+public import coregrammars.parsers.terms;
 
 /*
 version(COREGRAMMARS_MODGEN) {
@@ -18,7 +17,7 @@ version(COREGRAMMARS_MODGEN) {
 
 mixin template ini_parser(string text) {
 	enum Nodes = INIGrammar(text);
-	alias Parsed = coregrammars.parsers.ini_p.parse_node!Nodes;
+	alias Parsed = coregrammars.parsers.ini.parse_node!Nodes;
 }
 
 mixin template ini_parse_file(string fname) {

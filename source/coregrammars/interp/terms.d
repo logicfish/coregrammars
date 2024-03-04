@@ -1,8 +1,10 @@
-module coregrammars.parsers.term_i;
+module coregrammars.interp.terms;
 
 private import pegged.grammar;
 private import std.variant : Variant;
 private import std.conv : to;
+
+public import coregrammars.gen.terms;
 
 Variant terminal_value(ParseTree t) {
 	switch(t.name) {

@@ -1,4 +1,4 @@
-module coregrammars.parsers.json_i;
+module coregrammars.interp.json;
 
 private import std.variant : Variant;
 private import std.logger : log, warning;
@@ -7,14 +7,8 @@ private import std.algorithm : filter,map,sort,uniq;
 
 private import pegged.grammar;
 
-private import coregrammars.grammars;
-
-public import coregrammars.parsers.term_i;
-
-version(COREGRAMMARS_MODGEN) {
-} else {
-    private import coregrammars.gen.json;
-}
+public import coregrammars.gen.json;
+public import coregrammars.interp.terms;
 
 Variant[string] json_interp(string text) {
 	auto nodes = JSONGrammar(text);
@@ -140,7 +134,7 @@ unittest {
 }
 
 unittest {
-    static import coregrammars.parsers.json_p;
+    static import coregrammars.parsers.json;
 	enum Nodes = JSONGrammar(import("tests/testB.json"));
     
 	//auto nodesTuple = coregrammars.parsers.ini_p.parse_node!Nodes;
@@ -153,10 +147,10 @@ unittest {
     Array sizes and object member names cannot be overridden as they are part of the type.
     Empty strings are returned as null which cannot be overridden.
     **/
-	import coregrammars.parse;
-    static import coregrammars.parsers.json_p;
+    import coregrammars.util;
+    static import coregrammars.parsers.json;
 
-	mixin coregrammars.parsers.json_p.json_parser!(import("tests/test.json")) _p;
+	mixin coregrammars.parsers.json.json_parser!(import("tests/test.json")) _p;
 	auto nodesTuple = _p.Parsed;
 
 	import std.file : readText;
@@ -180,8 +174,8 @@ unittest {
     Uses a prototype build during compilation and overrides some of the values.
     Tests the deep fetch get_named_value that reads a nested value from a list of indexes.
     **/
-	import coregrammars.parse;
-    import coregrammars.parsers.json_p;
+    import coregrammars.util;
+    import coregrammars.parsers.json;
 
 	//enum Nodes = INIGrammar(import("tests/test.ini"));
 	//auto nodesTuple = coregrammars.parsers.ini_p.parse_node!Nodes;

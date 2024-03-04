@@ -1,4 +1,4 @@
-module coregrammars.parsers.ini_i;
+module coregrammars.interp.ini;
 
 private import std.variant : Variant;
 private import std.exception : enforce;
@@ -8,10 +8,8 @@ private import std.algorithm : filter,map,sort,uniq;
 
 private import pegged.grammar;
 
-private import coregrammars.grammars;
-private import coregrammars.parsers.ini_p;
-
-public import coregrammars.parsers.term_i;
+public import coregrammars.gen.ini;
+public import coregrammars.interp.terms;
 
 version(COREGRAMMARS_MODGEN) {
 	//
@@ -108,18 +106,18 @@ unittest {
 }
 
 unittest {
-    static import coregrammars.parsers.ini_p;
+    static import coregrammars.parsers.ini;
 	enum Nodes = INIGrammar(import("tests/testB.ini"));
     
-	auto nodesTuple = coregrammars.parsers.ini_p.parse_node!Nodes;
+	auto nodesTuple = coregrammars.parsers.ini.parse_node!Nodes;
 	assert(nodesTuple.TestSect.A.testKeyA2 == "test value B ***");
 }
 
 unittest {
-	import coregrammars.parse;
-    static import coregrammars.parsers.ini_p;
+	import coregrammars.util;
+    static import coregrammars.parsers.ini;
 
-	mixin coregrammars.parsers.ini_p.ini_parser!(import("tests/test.ini")) _p;
+	mixin coregrammars.parsers.ini.ini_parser!(import("tests/test.ini")) _p;
 	auto nodesTuple = _p.Parsed;
 
 	import std.file : readText;
@@ -134,8 +132,8 @@ unittest {
 }
 
 unittest {
-	import coregrammars.parse;
-    import coregrammars.parsers.ini_p;
+	import coregrammars.util;
+    import coregrammars.parsers.ini;
 
 	mixin ini_parser!(import("tests/test.ini")) _p;
 	auto nodesTuple = _p.Parsed;

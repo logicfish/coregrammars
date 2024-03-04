@@ -1,4 +1,4 @@
-module coregrammars.parsers.expr_i;
+module coregrammars.interp.expr;
 
 private import std.conv : to;
 private import std.exception : enforce;
@@ -8,13 +8,9 @@ private import pegged.grammar : identifier, ParseTree;
 
 private import yyd.arith : add_, sub_, mul_, div_;
 
-private import coregrammars.parsers.term_i;
+public import coregrammars.interp.terms;
 
-version(COREGRAMMARS_MODGEN) {
-	private import coregrammars.grammars;
-} else {
-	private import coregrammars.gen.expr;
-}
+public import coregrammars.gen.expr;
 
 alias ExprValue = double delegate();
 alias VarResolver = ExprValue delegate(const ParseTree);

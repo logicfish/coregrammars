@@ -1,12 +1,8 @@
-module coregrammars.parsers.term_p;
+module coregrammars.parsers.terms;
 
 private import std.conv : to;
 
-version(COREGRAMMARS_MODGEN) {
-	public import coregrammars.grammars;
-} else {
-	public import coregrammars.gen.ini;
-}
+public import coregrammars.gen.terms;
 
 template terminal_value(alias T) 
 	if(T.name == "Terminals.Literal")

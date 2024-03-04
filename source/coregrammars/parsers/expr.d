@@ -1,4 +1,4 @@
-module coregrammars.parsers.expr_p;
+module coregrammars.parsers.expr;
 
 private import std.meta : aliasSeqOf;
 private import std.conv : to;
@@ -7,21 +7,17 @@ private import pegged.grammar : identifier;
 
 private import yyd.arith : add, sub, mul, div;
 
-version(COREGRAMMARS_MODGEN) {
-	public import coregrammars.grammars;
-} else {
-	public import coregrammars.gen.expr;
-}
+public import coregrammars.gen.expr;
 
 mixin template evaluator(string text,alias Var = identifier) 
 {
 	enum Nodes = ExpressionsGrammar!Var(text);
-	alias Result = coregrammars.parsers.expr_p.eval_node!(Var,Nodes);
+	alias Result = coregrammars.parsers.expr.eval_node!(Var,Nodes);
 }
 
 mixin template evaluate_file(string fname,alias Var = identifier) 
 {
-	mixin coregrammars.parsers.expr_p.evaluator!(V,import(fname));
+	mixin coregrammars.parsers.expr.evaluator!(V,import(fname));
 }
 
 template eval_factors(alias V,T...) 
