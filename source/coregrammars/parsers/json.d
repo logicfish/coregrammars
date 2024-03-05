@@ -17,6 +17,7 @@ version(COREGRAMMARS_MODGEN) {
 
 mixin template json_parser(string text) {
 	enum Nodes = JSONGrammar(text);
+	static assert (Nodes.successful);
 	alias Parsed = coregrammars.parsers.json.parse_node!Nodes;
 }
 
@@ -24,24 +25,24 @@ mixin template json_parse_file(string fname) {
 	mixin coregrammars.parsers.json.json_parser!(import(fname));
 }
 
-template json_parse_node_list(T...) {
-	static if(T.length == 0) {
-		alias json_parse_node_list = tuple;
-	} else {
-		enum json_parse_node_list = 
-			    parse_node!(T[0]) 
-			    ~ json_parse_node_list!(T[1..$]);
-	}
+template json_parse_node_list() {
+    alias json_parse_node_list = tuple;
 }
 
-template json_parse_node_array(T...) {
-	static if(T.length == 0) {
-		alias json_parse_node_array = tuple;
-	} else {
-		enum json_parse_node_array = 
-			    tuple(parse_node!(T[0])) 
-			    ~ json_parse_node_array!(T[1..$]);
-	}
+template json_parse_node_list(T...) if(T.length != 0) {
+    enum json_parse_node_list = 
+		parse_node!(T[0]) 
+		~ json_parse_node_list!(T[1..$]);
+}
+
+template json_parse_node_array() {
+    alias json_parse_node_array = tuple;
+}
+
+template json_parse_node_array(T...) if(T.length != 0) {
+	enum json_parse_node_array = 
+		    tuple(parse_node!(T[0])) 
+		    ~ json_parse_node_array!(T[1..$]);
 }
 
 template parse_node(alias T) 
@@ -130,8 +131,6 @@ template terminal_value(alias T)
 }
 
 unittest {
-  //import coregrammars.gen.json;
-  alias JSON=JSONGrammar;
     enum example2 = `
     {
     "Number": 42,
@@ -148,10 +147,11 @@ unittest {
     "Empty" : {}
     }`;
 
-    enum example2Tree = JSON(example2);
-    enum x = parse_node!example2Tree;
+    mixin json_parser!example2 p;
+    enum x = p.Parsed;
 
     static assert(x.Number == 42);
+    static assert(x.Decimal == 123.456);
     static assert(x.Array[2] == 2);
     static assert(x.Array2[1][1] == 1);
     static assert(x.Obj.Member2[2] == 2);

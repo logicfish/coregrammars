@@ -15,13 +15,15 @@
 				"pegged": "~>0.4.9",
 				"yyd": "~>0.2.0"
 			},
-			"excludedSourceFiles": [
-				"source/coregrammars/interp/*",
-				"source/coregrammars/parsers/*"
-			],
 			"name": "modgen",
 			"stringImportPaths": [
 				"resources/"
+			],
+			"sourcePaths": [],
+			"sourceFiles": [
+				"source/coregrammars/grammars.d",
+				"source/coregrammars/util.d",			
+				"source/coregrammars/parsers/ini.d"
 			],
 			"targetType": "executable",
 			"versions": [
@@ -38,7 +40,14 @@
 			"description": "Shared components",
 			"name": "core",
 			"sourceFiles": [
-				"source/coregrammars/util.d"
+				"source/coregrammars/util.d",
+				"source/coregrammars/gen/terms.d",
+				"source/coregrammars/gen/expr.d",
+				"source/coregrammars/gen/ini.d",
+				"source/coregrammars/gen/json.d",
+				"source/coregrammars/gen/md.d",
+				"source/coregrammars/gen/xml2.d",
+				"source/coregrammars/gen/pegged.d"
 			],
 			"sourcePaths": [],
 			"stringImportPaths": [
@@ -52,7 +61,6 @@
 			"description": "Terminals grammar",
 			"name": "terms",
 			"sourceFiles": [
-				"source/coregrammars/gen/terms.d",
 				"source/coregrammars/parsers/terms.d",
 				"source/coregrammars/interp/terms.d"
 			],
@@ -68,7 +76,6 @@
 			"description": "Numeric Expression grammar",
 			"name": "expr",
 			"sourceFiles": [
-				"source/coregrammars/gen/expr.d",
 				"source/coregrammars/parsers/expr.d",
 				"source/coregrammars/interp/expr.d"
 			],
@@ -85,7 +92,6 @@
 			"name": "ini",
 			"sourcePaths": [],
 			"sourceFiles": [
-				"source/coregrammars/gen/ini.d",
 				"source/coregrammars/parsers/ini.d",
 				"source/coregrammars/interp/ini.d"
 			],
@@ -101,9 +107,23 @@
 			"name": "json",
 			"sourcePaths": [],
 			"sourceFiles": [
-				"source/coregrammars/gen/json.d",
 				"source/coregrammars/parsers/json.d",
 				"source/coregrammars/interp/json.d"
+			],
+			"stringImportPaths": [
+				"resources/"
+			],
+			"targetType": "library"
+		},{
+			"dependencies": {
+				"coregrammars:core": ">=0.0.0"
+			},
+			"description": "MD grammar",
+			"name": "md",
+			"sourcePaths": [],
+			"sourceFiles": [
+				"source/coregrammars/parsers/md.d",
+				"source/coregrammars/interp/md.d"
 			],
 			"stringImportPaths": [
 				"resources/"
@@ -117,7 +137,6 @@
 			"name": "xml",
 			"sourcePaths": [],
 			"sourceFiles": [
-				"source/coregrammars/gen/xml2.d",
 				"source/coregrammars/parsers/xml2.d",
 				"source/coregrammars/interp/xml2.d"
 			],
@@ -125,8 +144,27 @@
 				"resources/"
 			],
 			"targetType": "library"
+		},{
+			"dependencies": {
+				"coregrammars:core": ">=0.0.0"
+			},
+			"description": "Pegged grammar",
+			"name": "pegged",
+			"sourcePaths": [],
+			"sourceFiles": [
+				"source/coregrammars/parsers/pegged.d",
+				"source/coregrammars/interp/pegged.d"
+			],
+			"stringImportPaths": [
+				"resources/"
+			],
+			"targetType": "library"
 		}
 	],
+	"dependencies": {
+		"pegged": "~>0.4.9",
+		"yyd": "~>0.2.0"
+	},
 	"sourceFiles": [
 		"source/coregrammars/package.d"
 	],

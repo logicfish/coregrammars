@@ -2,14 +2,18 @@ module coregrammars.parsers.terms;
 
 private import std.conv : to;
 
-public import coregrammars.gen.terms;
+version(COREGRAMMARS_MODGEN) {
+	import pegged.grammar;
+	mixin(grammar(import("terms.peg")));
+} else {
+	public import coregrammars.gen.terms;
+}
 
 template terminal_value(alias T) 
 	if(T.name == "Terminals.Literal")
 {
 	alias terminal_value = terminal_value!(T.children[0]);
 }
-
 
 template terminal_value(alias T) 
 	if(T.name == "Terminals.String")
@@ -20,14 +24,14 @@ template terminal_value(alias T)
 template terminal_value(alias T) 
 	if(T.name == "Terminals.Number")
 {
-	enum terminal_value = T.matches[0].to!double;
-    /*static if(__traits(compiles, T.matches[0].to!int)) {
-        enum terminal_value = T.matches[0].to!int;
-    } else static if(__traits(compiles, T.matches[0].to!double)) {
-        enum terminal_value = T.matches[0].to!double;
-    } else {
-        enum terminal_value = 0;
-    }*/
+	enum val = T.matches[0].to!double;
+	/*static if(cast(int)val == val) {
+		enum terminal_value = cast(int)val;
+	} else {
+		enum terminal_value = val;
+	}*/
+	enum terminal_value = val;
+	
 }
 
 template terminal_value(alias T) 

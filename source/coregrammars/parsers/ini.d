@@ -5,31 +5,34 @@ private import std.array : array;
 private import std.meta : aliasSeqOf, NoDuplicates, staticSort;
 private import std.typecons : tuple, isTuple;
 
-public import coregrammars.gen.ini;
 public import coregrammars.parsers.terms;
 
-/*
-version(COREGRAMMARS_MODGEN) {
-} else {
-	public import coregrammars.gen.ini;
-}
-*/
-
 mixin template ini_parser(string text) {
+	version(COREGRAMMARS_MODGEN) {
+		import pegged.grammar;
+		mixin(grammar(import("ini.peg")));
+	} else {
+		public import coregrammars.gen.ini;
+	}
+
 	enum Nodes = INIGrammar(text);
+	static assert (Nodes.successful);
 	alias Parsed = coregrammars.parsers.ini.parse_node!Nodes;
 }
 
 mixin template ini_parse_file(string fname) {
-	mixin coregrammars.parsers.ini_p.ini_parser!(import(fname));
+	mixin coregrammars.parsers.ini.ini_parser!(import(fname));
+}
+
+template ini_parse_node_list() {
+	alias ini_parse_node_list = tuple;
 }
 
 template ini_parse_node_list(T...) {
-	static if(T.length == 0) {
-		alias ini_parse_node_list = tuple;
-	} else {
-		enum ini_parse_node_list = parse_node!(T[0]) ~ ini_parse_node_list!(T[1..$]);
-	}
+	enum ini_parse_node_list = 
+			parse_node!(T[0]) 
+			~ ini_parse_node_list!(T[1..$])
+	;
 }
 
 template parse_node(alias T) 
@@ -47,9 +50,14 @@ if(T.name == "INIGrammar.INI")
 }
 
 template parse_node(alias T)
-if(T.name == "INIGrammar.Decl") 
-{
-	enum parse_node = tuple!(T.matches[0])(terminal_value!(T.children[0]));
+if(
+		T.name == "INIGrammar.Decl" 
+		&& T.matches.length >= 1 
+		&& T.children.length >= 1
+) {
+	enum parse_node = tuple!(T.matches[0])(
+		terminal_value!(T.children[0])
+	);
 }
 
 template ini_find_section(alias T,string n)
@@ -59,7 +67,7 @@ if(T.name == "INIGrammar.INI")
 			e.name == "INIGrammar.Section"
 			&& e.children[0].matches.length == 1
 			&& e.children[0].matches[0] == n
-		);
+	);
 }
 
 template ini_find_subsection(alias T,string name,string sub) 
@@ -70,7 +78,7 @@ if(T.name == "INIGrammar.INI")
 			&& e.children[0].matches.length == 2
 			&& e.children[0].matches[0] == name
 			&& e.children[0].matches[1] == sub
-		).front;
+	).front;
 }
 
 template ini_list_section_names(alias T) 
@@ -85,48 +93,38 @@ if(T.name == "INIGrammar.INI")
 		).map!((e)=>
 			e.children[0].matches[0]
 		))));
-		//.array.sort.uniq);
 }
 
 template ini_list_subsection_names(alias T,string n) 
 if(T.name == "INIGrammar.INI") 
 {
-	enum ini_list_subsection_names = aliasSeqOf!(T.children.filter!(
-		e=>e.name == "INIGrammar.Section"
-		&& e.children[0].matches.length == 2
-		&& e.children[0].matches[0] == n
-	).map!(e=>e.children[0].matches[1])); // .array.sort.uniq;
+	enum Comp(const string N1, const string N2) = N1 < N2;
+	enum ini_list_subsection_names = NoDuplicates!(staticSort!(Comp,aliasSeqOf!(
+		T.children.filter!(
+			e=>e.name == "INIGrammar.Section"
+			&& e.children[0].matches.length == 2
+			&& e.children[0].matches[0] == n
+		).map!(e=>
+			e.children[0].matches[1]
+		))));
 }
 
 template ini_parse_all_sections(alias T) 
 if(T.name == "INIGrammar.INI") 
 {
-	enum ini_parse_all_sections = ini_parse_sections!(T,ini_list_section_names!(T));
+	enum ini_parse_all_sections = ini_parse_sections!(
+			T,
+			ini_list_section_names!(T)
+	);
+}
+
+template ini_parse_sections(alias T) 
+if(T.name == "INIGrammar.INI") {
+	alias ini_parse_sections = tuple;
 }
 
 template ini_parse_sections(alias T,names...) 
-if(T.name == "INIGrammar.INI") 
-{
-	static if(names.length == 0) {
-		alias ini_parse_sections = tuple;
-	} else static if(names.length == 1) {
-		alias sect = ini_find_section!(T,names[0]);
-		static if(!sect.empty) {
-			enum ini_parse_sections = tuple!(names[0])(
-				ini_parse_node_list!(
-					aliasSeqOf!(sect.front.children.filter!(
-						e=>e.name=="INIGrammar.Decl"
-					).array /*.sort!("a.matches[0] < b.matches[0]")*/ )
-				) ~ ini_parse_subsections!(T,names[0],
-					ini_list_subsection_names!(T,names[0])
-				));
-		} else {
-			enum ini_parse_sections = tuple!(names[0])(
-					ini_parse_subsections!(T,names[0],
-						ini_list_subsection_names!(T,names[0])
-				));
-		}
-	} else {
+if(T.name == "INIGrammar.INI") {
 		alias next = ini_parse_sections!(T,names[1..$]);
 		alias sect = ini_find_section!(T,names[0]);
 
@@ -145,20 +143,13 @@ if(T.name == "INIGrammar.INI")
 					ini_list_subsection_names!(T,names[0])
 				)) ~ next;
 		}
-	}
 }
 
-
-template ini_parse_subsections(alias T,string section,names...) {
-	static if(names.length == 0) {
+template ini_parse_subsections(alias T,string section) {
 		alias ini_parse_subsections = tuple;
-	} else static if(names.length == 1) {
-		enum ini_parse_subsections =  tuple!(names[0])(ini_parse_node_list!(
-			aliasSeqOf!(ini_find_subsection!(T,section,names[0]).children.filter!(
-				e=>e.name=="INIGrammar.Decl"
-			).array.sort!("a.matches[0] < b.matches[0]")
-		)));
-	} else {
+}
+
+template ini_parse_subsections(alias T,string section, names...) {
 		alias next = ini_parse_subsections!(T,section,names[1..$]);
 
 		enum ini_parse_subsections =  tuple!(names[0])(ini_parse_node_list!(
@@ -166,15 +157,12 @@ template ini_parse_subsections(alias T,string section,names...) {
 				e=>e.name=="INIGrammar.Decl"
 			).array.sort!("a.matches[0] < b.matches[0]")
 		))) ~ next;
-	}
 }
 
 @safe
 unittest {
     import std.stdio;
 
-	//enum Nodes = INIGrammar(import("tests/test.ini"));
-	//enum x = parse_node!Nodes;
 	mixin ini_parser!(import("tests/test.ini")) _p;
 	enum x = _p.Parsed;
 	
