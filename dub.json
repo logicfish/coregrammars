@@ -20,10 +20,19 @@
 				"resources/"
 			],
 			"sourcePaths": [],
+			"excludeFiles": [ 
+				"source/coregrammars/gen/*.d", 
+				"source/coregrammars/interp/*.d",
+				"source/coregrammars/parsers/expr.d",
+				"source/coregrammars/parsers/json.d",
+				"source/coregrammars/parsers/md.d",
+				"source/coregrammars/parsers/pegged.d",
+				"source/coregrammars/parsers/xml2.d"
+			],
 			"sourceFiles": [
-				"source/coregrammars/grammars.d",
+				"source/coregrammars/genmod.d",
 				"source/coregrammars/util.d",			
-				"source/coregrammars/parsers/ini.d"
+				"source/coregrammars/parsers/ini.d",
 			],
 			"targetType": "executable",
 			"versions": [

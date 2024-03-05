@@ -100,7 +100,8 @@ if(
 					static if(is(destType : srcType)) {
 						res.field[i] = v.field[staticIndexOf!(R.fieldNames[i],V.fieldNames)];
 					} else {
-						pragma(msg,"Incompatible tuples: expected "~ destType ~ " for " ~ R.fieldNames[i]);
+						//pragma(msg,"Incompatible tuples: expected "~ destType ~ " for " ~ R.fieldNames[i]);
+						static assert(0,"Incompatible tuples: expected "~ destType ~ " for " ~ R.fieldNames[i]);
 					}
 				}
 			}

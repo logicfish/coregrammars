@@ -6,11 +6,11 @@ private import std.meta : aliasSeqOf;
 private import std.typecons : tuple;
 private import std.conv : to;
 
-public import coregrammars.gen.json;
 public import coregrammars.parsers.terms;
 
 version(COREGRAMMARS_MODGEN) {
-	//...
+    import pegged.grammar;
+    mixin(grammar(import("json.peg")));
 } else {
     private import coregrammars.gen.json;
 }

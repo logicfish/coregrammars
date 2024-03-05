@@ -1,4 +1,4 @@
-module coregrammars.grammars;
+module coregrammars.genmod;
 
 private import std.array : split;
 private import std.algorithm : map, sort;
@@ -27,6 +27,7 @@ version(COREGRAMMARS_MODGEN) {
     static foreach(g;CoreGrammars) {
       mixin(grammar(import(g~".peg")));
     }
+    
   } else {
 
     // Main routine that regenerates each grammar module

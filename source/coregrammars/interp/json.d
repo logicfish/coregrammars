@@ -136,6 +136,7 @@ unittest {
 unittest {
     static import coregrammars.parsers.json;
 	enum Nodes = JSONGrammar(import("tests/testB.json"));
+	static assert(Nodes.successful);
     
 	//auto nodesTuple = coregrammars.parsers.ini_p.parse_node!Nodes;
 	//assert(nodesTuple.TestSect.A.testKeyA2 == "test value B ***");
