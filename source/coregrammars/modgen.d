@@ -1,14 +1,16 @@
-module coregrammars.genmod;
+module coregrammars.modgen;
 
 private import std.array : split;
-private import std.algorithm : map, sort;
+private import std.algorithm : map;
 private import std.string : strip;
 
 private import pegged.grammar;
 
 import coregrammars.parsers.ini;
 
-mixin ini_parser!(import("modgen.ini")) _cfg;
+enum CfgFile = "modgen.ini";
+
+mixin ini_parser!(import(CfgFile)) _cfg;
 enum Cfg = _cfg.Parsed;
 
 version(unittest) {
@@ -16,9 +18,6 @@ version(unittest) {
 } else {
     enum CoreGrammars = Cfg.Main.grammars.split(",").map!(strip);
 }
-
-enum CoreGrammarsFolder = Cfg.Main.outputFolder; // "source/coregrammars/gen/";
-enum CoreGrammarsPackage = Cfg.Main.packagePrefix; // "coregrammars.gen";
 
 version(COREGRAMMARS_MODGEN) {
         
@@ -29,28 +28,58 @@ version(COREGRAMMARS_MODGEN) {
     }
     
   } else {
+    private import std.file : mkdirRecurse,rmdirRecurse,exists,readText;
+    private import std.variant : Variant;
+    private import std.meta : staticIndexOf;
+    private import std.path : buildPath;
+    private import std.array : array;
+    
+    private import coregrammars.interp.ini;
+   	private import coregrammars.util;
+
 
     // Main routine that regenerates each grammar module
     void main(string[] args) {
-      import std.file : mkdirRecurse,rmdirRecurse;
-      CoreGrammarsFolder.rmdirRecurse;
-      CoreGrammarsFolder.mkdirRecurse;
-      import std.meta : staticIndexOf;
+      auto cfg = Cfg;
+      
+      if(CfgFile.exists) {
+        auto txt = readText(CfgFile);
+        Variant[string] vals = ini_interp(txt);
+        tuple_set_fields(cfg,vals);        
+      }
+      
+      auto CoreGrammarsFolder = cfg.Main.outputFolder;
+      auto CoreGrammarsPackage = cfg.Main.packagePrefix;
+      
+      if(CoreGrammarsFolder.exists) {
+        CoreGrammarsFolder.rmdirRecurse;
+      }
+      CoreGrammarsFolder.mkdirRecurse;      
+      
+      string[] coreGrammars = cfg.Main.grammars.split(",").map!(strip).array;
+
       string prefix = "";
-      static foreach(g;CoreGrammars) {
+      
+      static foreach(string g;CoreGrammars) {
         import std.logger;
-        pragma(msg,"Defined module generator: "~g);
-        info("Running module generator: ",g);
+        
+        pragma(msg,"Define module generator: "~g);
+        
         static if (staticIndexOf!(g,typeof(Cfg.CoreGrammars).fieldNames) != -1) {
-            prefix = mixin ("Cfg.CoreGrammars." ~ g ~ ".prefix");
+            //prefix = mixin ("Cfg.CoreGrammars." ~ g ~ ".prefix");
+            prefix = mixin ("cfg.CoreGrammars." ~ g ~ ".prefix");
         } else {
             prefix = "";
         }
-        asModule(CoreGrammarsPackage ~ "." ~ g,
-            CoreGrammarsFolder ~ g,
-            import(g ~ ".peg"),
-            prefix ~ "\n"
-        );
+        
+        //if(coreGrammars.indexOf(g) != -1) {
+          info("Running module generator: ",g);
+          asModule(CoreGrammarsPackage ~ "." ~ g,
+              CoreGrammarsFolder.buildPath(g),
+              import(g ~ ".peg"),
+              prefix ~ "\n"
+          );
+        //}        
       }
     }
   }
@@ -66,7 +95,6 @@ version(COREGRAMMARS_MODGEN) {
 
 static if (Cfg.Tests.ini) {
     unittest {
-        //import coregrammars.gen.ini;
         enum input = `
 [Section1]
 testString = "stringVal"
@@ -83,7 +111,6 @@ testBool = false
     }
 
     unittest {
-        //import coregrammars.gen.ini;
         enum input = `
 # Test comment
 [Section1]
@@ -105,7 +132,6 @@ testBool = false
 
 static if (Cfg.Tests.json) {
     unittest {
-      //import coregrammars.gen.json;
       alias JSON=JSONGrammar;
         enum example2 = `
         {
