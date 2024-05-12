@@ -43,14 +43,7 @@
 			"description": "Shared components",
 			"name": "core",
 			"sourceFiles": [
-				"source/coregrammars/util.d",
-				"source/coregrammars/gen/terms.d",
-				"source/coregrammars/gen/expr.d",
-				"source/coregrammars/gen/ini.d",
-				"source/coregrammars/gen/json.d",
-				"source/coregrammars/gen/md.d",
-				"source/coregrammars/gen/xml2.d",
-				"source/coregrammars/gen/pegged.d"
+				"source/coregrammars/util.d"
 			],
 			"sourcePaths": [],
 			"stringImportPaths": [
@@ -64,6 +57,7 @@
 			"description": "Terminals grammar",
 			"name": "terms",
 			"sourceFiles": [
+				"source/coregrammars/gen/terms.d",
 				"source/coregrammars/parsers/terms.d",
 				"source/coregrammars/interp/terms.d"
 			],
@@ -79,6 +73,7 @@
 			"description": "Numeric Expression grammar",
 			"name": "expr",
 			"sourceFiles": [
+				"source/coregrammars/gen/expr.d",
 				"source/coregrammars/parsers/expr.d",
 				"source/coregrammars/interp/expr.d"
 			],
@@ -95,6 +90,7 @@
 			"name": "ini",
 			"sourcePaths": [],
 			"sourceFiles": [
+				"source/coregrammars/gen/ini.d",
 				"source/coregrammars/parsers/ini.d",
 				"source/coregrammars/interp/ini.d"
 			],
@@ -110,6 +106,7 @@
 			"name": "json",
 			"sourcePaths": [],
 			"sourceFiles": [
+				"source/coregrammars/gen/json.d",
 				"source/coregrammars/parsers/json.d",
 				"source/coregrammars/interp/json.d"
 			],
@@ -125,6 +122,7 @@
 			"name": "md",
 			"sourcePaths": [],
 			"sourceFiles": [
+				"source/coregrammars/gen/md.d",
 				"source/coregrammars/parsers/md.d",
 				"source/coregrammars/interp/md.d"
 			],
@@ -140,6 +138,7 @@
 			"name": "xml",
 			"sourcePaths": [],
 			"sourceFiles": [
+				"source/coregrammars/gen/xml2.d",
 				"source/coregrammars/parsers/xml2.d",
 				"source/coregrammars/interp/xml2.d"
 			],
@@ -155,6 +154,7 @@
 			"name": "pegged",
 			"sourcePaths": [],
 			"sourceFiles": [
+				"source/coregrammars/gen/pegged.d",
 				"source/coregrammars/parsers/pegged.d",
 				"source/coregrammars/interp/pegged.d"
 			],
@@ -172,7 +172,7 @@
 	"sourceFiles": [
 		"source/coregrammars/package.d"
 	],
-	"copyright": "Copyright © 2022, Mark Fisher",
+	"copyright": "Copyright © 2022-2024, Mark Fisher",
 	"description": "Grammars containing core language features, for creating DSLs and embedded languages",
 	"license": "Apache License 2.0",
 	"name": "coregrammars",
